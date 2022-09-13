@@ -3,19 +3,14 @@ import mysql from "mysql2/promise";
 import { formatStringToNumber, saltIt, defaultUsers, handleError, connectionSettings } from "../helpers";
 
 export const resetUsersTable = async (req: Request, res: Response) => {
-  const mappedUsers = defaultUsers
-    .map(
-      (user) =>
-        `('${user.name}',
+  const mappedUsers = defaultUsers.map(
+    (user) =>
+      `('${user.name}',
         ${user.netWorth ? formatStringToNumber(user.netWorth) : null},
         ${user.hobbies ? `'${JSON.stringify(user.hobbies)}'` : null},
         '${user.email.toLowerCase()}',
-        '${saltIt(user.password)}',
-        '${user.password}')`
-    )
-    .join(",");
-
-  console.log(mappedUsers);
+        '${saltIt(user.password)}')`
+  );
 
   const queries = [
     //Remove all users
@@ -28,13 +23,12 @@ export const resetUsersTable = async (req: Request, res: Response) => {
         hobbies JSON,
         email VARCHAR(255) UNIQUE NOT NULL,
         password VARCHAR(255) NOT NULL,
-        realPassword VARCHAR(255) NOT NULL,
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY(id)
       )
       `,
     //Insert users
-    `INSERT INTO users(name,netWorth,hobbies,email,password,realPassword) VALUES ${mappedUsers};`,
+    `INSERT INTO users(name,netWorth,hobbies,email,password) VALUES ${mappedUsers};`,
     //Show all users
     "SELECT * FROM users;",
   ];

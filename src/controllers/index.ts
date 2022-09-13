@@ -1,7 +1,7 @@
 import { getSettings, getUsers, getUsersById } from "./get";
-import { resetUsersTable } from "./adminActions";
+import { resetUsersTable } from "./setup";
 import { createUser, loginUser } from "./auth";
-import { authToken, changeName, changeEmail, changeHobbies, changeNetWorth } from "./userActions";
+import { authToken, changeName, changeEmail, changeHobbies, changeNetWorth } from "./actions";
 
 export {
   getSettings,

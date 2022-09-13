@@ -30,7 +30,7 @@ export const getUsersById = async (req: Request, res: Response) => {
       throw { errMessage: "Invalid id", errStatus: 400 } as CError;
     }
     const connection = await mysql.createConnection(connectionSettings);
-    const [users] = await connection.execute(`SELECT * FROM users WHERE id IN (${ids.join(",")});`);
+    const [users] = await connection.execute(`SELECT * FROM users WHERE id IN (${ids});`);
     if (!Array.isArray(users)) {
       await connection.end();
       throw { errMessage: "Users not found", errStatus: 404 } as CError;
