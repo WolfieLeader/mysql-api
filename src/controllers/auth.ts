@@ -1,16 +1,9 @@
 import { Request, Response } from "express";
 import mysql from "mysql2/promise";
 import jsonwebtoken from "jsonwebtoken";
-import {
-  connectionSettings,
-  secretKey,
-  handleError,
-  saltIt,
-  compareSalt,
-  hashIt,
-  validateEmail,
-  hasLettersDigitsSpacesOnly,
-} from "../helpers";
+import { connectionSettings, secretKey } from "../helpers/defaultSettings";
+import { handleError, validateEmail, hasLettersDigitsSpacesOnly } from "../helpers/handlers";
+import { hashIt, saltIt, compareSalt } from "../helpers/encryption";
 import { CError, UserSQL } from "../interfaces";
 
 export const createUser = async (req: Request, res: Response) => {

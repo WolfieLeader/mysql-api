@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import mysql from "mysql2/promise";
-import { convertParamsToInt, connectionSettings, handleError, validateEmail } from "../helpers";
+import { connectionSettings } from "../helpers/defaultSettings";
+import { handleError, validateEmail, convertParamsToInt } from "../helpers/handlers";
 import { CError, UserSQL } from "../interfaces";
 
 export const getSettings = (req: Request, res: Response) => {

@@ -1,15 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import mysql from "mysql2/promise";
 import jsonwebtoken from "jsonwebtoken";
-import {
-  connectionSettings,
-  handleError,
-  hashIt,
-  hasLettersDigitsSpacesOnly,
-  validateEmail,
-  secretKey,
-  formatStringToNumber,
-} from "../helpers";
+import { connectionSettings, secretKey } from "../helpers/defaultSettings";
+import { handleError, validateEmail, hasLettersDigitsSpacesOnly, formatStringToNumber } from "../helpers/handlers";
+import { hashIt } from "../helpers/encryption";
 import { UserSQL, CError } from "../interfaces";
 
 export const authToken = (req: Request, res: Response, next: NextFunction) => {

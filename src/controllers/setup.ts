@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import mysql from "mysql2/promise";
-import { formatStringToNumber, saltIt, defaultUsers, handleError, connectionSettings } from "../helpers";
+import { connectionSettings, defaultUsers } from "../helpers/defaultSettings";
+import { handleError, formatStringToNumber } from "../helpers/handlers";
+import { saltIt } from "../helpers/encryption";
 
 export const resetUsersTable = async (req: Request, res: Response) => {
   const mappedUsers = defaultUsers.map(
