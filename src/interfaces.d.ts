@@ -13,7 +13,6 @@ export interface UserSQL {
   hobbies: string[] | null;
   email: string;
   password: string;
-  realPassword: string;
   createdAt: any;
 }
 
