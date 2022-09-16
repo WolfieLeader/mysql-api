@@ -1,5 +1,6 @@
 import express from "express";
-import { authToken, changeName, changeEmail, changeHobbies, changeNetWorth } from "../controllers";
+import { authToken } from "../controllers/auth";
+import { changeName, changeEmail, changeHobbies } from "../controllers/users/actions";
 
 const actionsRoute = express.Router();
 
@@ -7,6 +8,5 @@ actionsRoute.use(authToken);
 actionsRoute.post("/name", changeName);
 actionsRoute.post("/email", changeEmail);
 actionsRoute.post("/hobbies", changeHobbies);
-actionsRoute.post("/networth", changeNetWorth);
 
 export default actionsRoute;

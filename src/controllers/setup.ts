@@ -1,52 +1,69 @@
 import { Request, Response } from "express";
-import mysql from "mysql2/promise";
-import { connectionSettings, defaultUsers } from "../helpers/defaultSettings";
-import { handleError, formatStringToNumber } from "../helpers/handlers";
-import { saltIt } from "../helpers/encryption";
+import handleError from "../config/error/handleError";
+import { formattedUsers } from "../config/setup/users";
+import { unformattedCompanies } from "../config/setup/companies";
+import pool from "../config/sql/pool";
+import { connectionSettings } from "../config/sql/connection";
 
-export const resetUsersTable = async (req: Request, res: Response) => {
-  const mappedUsers = defaultUsers.map(
-    (user) =>
-      `('${user.name}',
-        ${user.netWorth ? formatStringToNumber(user.netWorth) : null},
-        ${user.hobbies ? `'${JSON.stringify(user.hobbies)}'` : null},
-        '${user.email.toLowerCase()}',
-        '${saltIt(user.password)}')`
-  );
+export const getSettings = (req: Request, res: Response) => {
+  return res.status(200).json({ settings: connectionSettings });
+};
 
-  const queries = [
+export const resetTables = async (req: Request, res: Response) => {
+  const dropQueries = [
+    //Remove all companies
+    "DROP TABLE IF EXISTS companies;",
     //Remove all users
     "DROP TABLE IF EXISTS users;",
-    //Create table
+  ];
+  const usersQueries = [
+    //Create users table
     `CREATE TABLE users(
-        id INT AUTO_INCREMENT,
-        name VARCHAR(255) NOT NULL,
-        netWorth BIGINT,
-        hobbies JSON,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY(id)
-      )
-      `,
+    id INT AUTO_INCREMENT,
+    name VARCHAR(255) UNIQUE NOT NULL,
+    netWorth BIGINT DEFAULT 0,
+    hobbies JSON,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(id)
+  );
+  `,
     //Insert users
-    `INSERT INTO users(name,netWorth,hobbies,email,password) VALUES ${mappedUsers};`,
-    //Show all users
-    "SELECT * FROM users;",
+    `INSERT INTO users(name,netWorth,hobbies,email,password) VALUES ${formattedUsers};`,
+  ];
+
+  const companiesQueries = [
+    //Create companies table
+    `CREATE TABLE companies(
+    id INT AUTO_INCREMENT,
+    name VARCHAR(255) UNIQUE NOT NULL,
+    founderId INT NOT NULL,
+    foundedAt INT NOT NULL,
+    PRIMARY KEY(id),
+    FOREIGN KEY (founderId) REFERENCES users(id)
+  );
+  `,
+    //Insert companies
+    `INSERT INTO companies(name,founderId,foundedAt) VALUES ${await unformattedCompanies};`,
   ];
 
   try {
-    const connection = await mysql.createConnection(connectionSettings);
-    for (const query of queries) {
-      const [rows] = await connection.execute(query);
-      if (query.includes("SELECT")) {
-        res.status(201).json(rows);
-        break;
-      }
+    for (const query of dropQueries) {
+      await pool.execute(query);
     }
-    await connection.end();
+    for (const query of usersQueries) {
+      await pool.execute(query);
+    }
+    for (const query of companiesQueries) {
+      await pool.execute(query);
+    }
+    const [results] = await pool.execute(
+      "SELECT companies.name AS Company,users.name AS FoundedBy FROM users RIGHT JOIN companies ON users.id=companies.founderId"
+    );
+    res.status(200).json(results);
   } catch (err) {
-    const { errStatus, errMessage } = handleError(err);
-    res.status(errStatus).json({ error: errMessage });
+    const error = handleError(err);
+    res.status(error.status).json({ error: error.message });
   }
 };
