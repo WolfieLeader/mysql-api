@@ -1,10 +1,8 @@
-class CError {
-  public message: string;
-  public status: number;
-
-  constructor(message: string, status: number) {
-    this.message = message;
+class CError extends Error {
+  constructor(readonly message: string, public readonly status: number, public readonly name: string = "CError") {
+    super(message);
     this.status = status;
+    super.name = "CError";
   }
 }
 

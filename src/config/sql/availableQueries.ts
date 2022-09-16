@@ -1,5 +1,4 @@
 import { Request } from "express";
-import CError from "../error/CError";
 
 type Order = "ASC" | "DESC";
 
