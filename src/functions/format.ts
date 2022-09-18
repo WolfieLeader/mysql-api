@@ -1,4 +1,4 @@
-import CError from "../config/error/CError";
+import CError from "../error/CError";
 
 enum Format {
   T = 1e12,
@@ -33,11 +33,18 @@ export const bigNumberToString = (number: number): string => {
   return formatter.format(number);
 };
 
+const isValidNumber = (number: number | bigint): boolean => {
+  if (!Number.isSafeInteger(Number(number))) throw new CError("Out Of Range", 400);
+  if (Number(number) < 1) throw new CError("Number Must Be Positive", 400);
+  return true;
+};
+
 export const formatParamsToNumbers = (params: unknown): number[] => {
   if (!params) throw new CError("Missing Params", 400);
-  if (typeof params !== "string") throw new CError("Invalid Params", 400);
-  if (Number.isSafeInteger(Number(params))) return [Number(params)];
-  if (!params.includes(",")) throw new CError("Invalid Params", 400);
+  if (typeof params === "number" && isValidNumber(params)) return [params];
+  if (typeof params !== "string") throw new CError("Invalid Params Type", 400);
+  if (Number.isInteger(Number(params)) && isValidNumber(Number(params))) return [Number(params)];
+  if (!params.includes(",")) throw new CError("Invalid Params Content", 400);
   const ids = params.split(",");
   const numbers = ids.filter((id) => Number.isSafeInteger(Number(id)) && Number(id) > 0).map((id) => Number(id));
   if (numbers.length === 0) throw new CError("Invalid Params", 400);

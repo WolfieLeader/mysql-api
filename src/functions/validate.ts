@@ -1,4 +1,4 @@
-import CError from "../config/error/CError";
+import CError from "../error/CError";
 import jsonwebtoken from "jsonwebtoken";
 import { hashIt } from "./encrypt";
 import { secretKey } from "../config/secretKey";
@@ -66,11 +66,12 @@ export const validateId = (id: unknown): boolean => {
   return true;
 };
 
-export const validateDecoded = (decoded: string | jsonwebtoken.JwtPayload): boolean => {
+export const validateDecoded = (decoded: unknown): boolean => {
   if (!decoded) throw new CError("Missing Token Content", 400);
   if (typeof decoded !== "object") throw new CError("Invalid Token Content Type", 400);
-  if (!("id" in decoded)) throw new CError("Invalid Token", 400);
-  validateId(decoded.id);
+  if (!decoded.hasOwnProperty("id")) throw new CError("Missing Id", 400);
+  const { id } = decoded as { id: unknown };
+  validateId(id);
   return true;
 };
 
@@ -80,6 +81,5 @@ export const validateToken = (token: unknown): boolean => {
   const jwtKey = hashIt(secretKey);
   const decoded = jsonwebtoken.verify(token, jwtKey);
   validateDecoded(decoded);
-  console.log(jsonwebtoken.decode(token));
   return true;
 };

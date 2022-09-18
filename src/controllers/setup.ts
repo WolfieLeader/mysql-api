@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import handleError from "../config/error/handleError";
+import handleError from "../error/handleError";
 import { formattedUsers } from "../config/setup/users";
 import { unformattedCompanies } from "../config/setup/companies";
 import pool from "../config/sql/pool";

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import CError from "../../config/error/CError";
-import handleError from "../../config/error/handleError";
+import CError from "../../error/CError";
+import handleError from "../../error/handleError";
 import pool from "../../config/sql/pool";
 import { isEmailTaken } from "../../functions/query";
 import { validateEmail, validateName, validateId, validateHobbies } from "../../functions/validate";

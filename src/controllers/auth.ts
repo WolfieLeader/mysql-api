@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import jsonwebtoken from "jsonwebtoken";
 import pool from "../config/sql/pool";
-import handleError from "../config/error/handleError";
-import CError from "../config/error/CError";
+import handleError from "../error/handleError";
+import CError from "../error/CError";
 import { validateDecoded, validateEmail, validateName, validatePassword, validateToken } from "../functions/validate";
 import { compareSalt, hashIt, saltIt } from "../functions/encrypt";
 import { isEmailTaken } from "../functions/query";

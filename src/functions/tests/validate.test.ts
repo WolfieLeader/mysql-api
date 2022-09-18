@@ -1,5 +1,13 @@
-import { expect } from "@jest/globals";
-import { validateEmail, validateName, validatePassword, validateId, validateHobbies, validateToken } from "../validate";
+import { expect, it, describe } from "@jest/globals";
+import {
+  validateEmail,
+  validateName,
+  validatePassword,
+  validateId,
+  validateHobbies,
+  validateToken,
+  validateDecoded,
+} from "../validate";
 import jsonwebtoken from "jsonwebtoken";
 import { secretKey } from "../../config/secretKey";
 import { hashIt } from "../encrypt";
@@ -145,9 +153,55 @@ describe("Testing validate.ts Folder", () => {
       const token = 123;
       expect(() => validateToken(token)).toThrow("Invalid Token Type");
     });
-    it("Should throw Invalid Token", () => {
+    it("Should throw jwt malformed", () => {
       const token = "Test";
       expect(() => validateToken(token)).toThrow("jwt malformed");
+    });
+    it("Should throw jwt expired", async () => {
+      const jwtKey = hashIt(secretKey);
+      const token = jsonwebtoken.sign({ id: 23 }, jwtKey, { expiresIn: "1s" });
+      await new Promise((resolve) => setTimeout(resolve, 1100));
+      expect(() => validateToken(token)).toThrow("jwt expired");
+    });
+    it("Should throw invalid signature", () => {
+      const token = jsonwebtoken.sign({ id: 23 }, "Test", { expiresIn: "5m" });
+      expect(() => validateToken(token)).toThrow("invalid signature");
+    });
+    it("Should throw invalid token", () => {
+      const jwtKey = hashIt(secretKey);
+      const token = jsonwebtoken.sign({ id: 23 }, jwtKey, { expiresIn: "5m" });
+      expect(() => validateToken(token.slice(2, token.length))).toThrow("invalid token");
+    });
+  });
+  describe("Testing validateDecoded Function", () => {
+    it("Should return true if decoded is valid", () => {
+      const jwtKey = hashIt(secretKey);
+      const decoded = jsonwebtoken.decode(jsonwebtoken.sign({ id: 23 }, jwtKey, { expiresIn: "5m" }));
+      expect(validateDecoded(decoded)).toBe(true);
+    });
+    it("Should throw Missing Token Content", () => {
+      const decoded = undefined;
+      expect(() => validateDecoded(decoded)).toThrow("Missing Token Content");
+    });
+    it("Should throw Invalid Token Content Type", () => {
+      const decoded = 123;
+      expect(() => validateDecoded(decoded)).toThrow("Invalid Token Content Type");
+    });
+    it("Should throw Missing Id", () => {
+      const decoded = {};
+      expect(() => validateDecoded(decoded)).toThrow("Missing Id");
+    });
+    it("Should throw Invalid Id Type", () => {
+      const decoded = { id: "Test" };
+      expect(() => validateDecoded(decoded)).toThrow("Invalid Id Type");
+    });
+    it("Should throw Invalid Id", () => {
+      const decoded = { id: -1 };
+      expect(() => validateDecoded(decoded)).toThrow("Invalid Id");
+    });
+    it("Should throw Out Of Range", () => {
+      const decoded = { id: 2 ** 53 };
+      expect(() => validateDecoded(decoded)).toThrow("Out Of Range");
     });
   });
 });

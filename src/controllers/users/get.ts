@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import pool from "../../config/sql/pool";
-import CError from "../../config/error/CError";
-import handleError from "../../config/error/handleError";
+import CError from "../../error/CError";
+import handleError from "../../error/handleError";
 import { formatParamsToNumbers } from "../../functions/format";
 import { UserSQL } from "../../config/setup/users";
 import { addQueries } from "../../config/sql/availableQueries";
