@@ -35,6 +35,5 @@ const getOffset = (offset: unknown): number => {
 export const addQueries = (req: Request, by: string): string => {
   const { order, limit, offset } = req.query;
   const string = ` ORDER BY ${by} ${getOrder(order)} LIMIT ${getOffset(offset)},${getLimit(limit)};`;
-  console.log(string);
   return string;
 };

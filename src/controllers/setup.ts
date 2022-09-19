@@ -48,22 +48,17 @@ export const resetTables = async (req: Request, res: Response) => {
     `INSERT INTO companies(name,founderId,foundedAt) VALUES ${await unformattedCompanies};`,
   ];
 
-  try {
-    for (const query of dropQueries) {
-      await pool.execute(query);
-    }
-    for (const query of usersQueries) {
-      await pool.execute(query);
-    }
-    for (const query of companiesQueries) {
-      await pool.execute(query);
-    }
-    const [results] = await pool.execute(
-      "SELECT companies.name AS Company,users.name AS FoundedBy FROM users RIGHT JOIN companies ON users.id=companies.founderId"
-    );
-    res.status(200).json(results);
-  } catch (err) {
-    const error = handleError(err);
-    res.status(error.status).json({ error: error.message });
+  for (const query of dropQueries) {
+    await pool.execute(query);
   }
+  for (const query of usersQueries) {
+    await pool.execute(query);
+  }
+  for (const query of companiesQueries) {
+    await pool.execute(query);
+  }
+  const [results] = await pool.execute(
+    "SELECT companies.name AS Company,users.name AS FoundedBy FROM users RIGHT JOIN companies ON users.id=companies.founderId"
+  );
+  res.status(200).json(results);
 };

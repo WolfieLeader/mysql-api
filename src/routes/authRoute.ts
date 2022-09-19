@@ -1,12 +1,12 @@
 import express from "express";
-
+import { protect } from "../error/errorMiddleware";
 import { createUser, loginUser } from "../controllers/auth";
 
 const authRoute = express.Router();
 
-authRoute.post("/signup", createUser);
-authRoute.post("/register", createUser);
-authRoute.post("/login", loginUser);
-authRoute.post("/signin", loginUser);
+authRoute.post("/signup", protect(createUser));
+authRoute.post("/register", protect(createUser));
+authRoute.post("/login", protect(loginUser));
+authRoute.post("/signin", protect(loginUser));
 
 export default authRoute;

@@ -11,7 +11,7 @@
     "test:watch": "jest --watch"
   },
   "keywords": [],
-  "license": "MIT",
+  "license": "ISC",
   "author": "WolfieLeader",
   "dependencies": {
     "cors": "^2.8.5",
