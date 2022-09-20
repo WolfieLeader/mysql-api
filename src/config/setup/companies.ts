@@ -1,17 +1,5 @@
 import { getUserIdByName } from "../../functions/query";
-
-export interface Company {
-  name: string;
-  founder: string | string[];
-  foundedAt: number;
-}
-
-export interface CompanySQL {
-  id: number;
-  name: string;
-  founderId: number;
-  foundedAt: number;
-}
+import { Company } from "../companies";
 
 export const defaultCompanies: Company[] = [
   {
@@ -50,14 +38,11 @@ export const defaultCompanies: Company[] = [
     foundedAt: 1998,
   },
 ];
-const formatCompanies = async (): Promise<string[]> => {
-  const formattedCompanies = await Promise.all(
-    defaultCompanies.map(async (company) => {
-      const founderId = await getUserIdByName(company.founder);
-      return `('${company.name}', ${founderId}, ${company.foundedAt})`;
-    })
-  );
-  return formattedCompanies;
-};
 
-export const unformattedCompanies = formatCompanies();
+export const unformattedCompanies = (async (): Promise<string[]> => {
+  return await Promise.all(
+    defaultCompanies.map(
+      async (company) => `('${company.name}', ${await getUserIdByName(company.founder)}, ${company.foundedAt})`
+    )
+  );
+})();

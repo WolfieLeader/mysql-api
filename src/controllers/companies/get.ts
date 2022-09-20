@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import pool from "../../config/sql/pool";
 import CError from "../../error/CError";
 import { formatParamsToNumbers } from "../../functions/format";
-import { CompanySQL } from "../../config/setup/companies";
+import { CompanySQL } from "../../config/companies";
 import { addQueries } from "../../config/sql/availableQueries";
 
 export const getCompanies = async (req: Request, res: Response) => {

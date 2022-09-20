@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import pool from "../../config/sql/pool";
 import CError from "../../error/CError";
 import { formatParamsToNumbers } from "../../functions/format";
-import { UserSQL } from "../../config/setup/users";
+import { UserSQL } from "../../config/users";
 import { addQueries } from "../../config/sql/availableQueries";
 
 export const getUsers = async (req: Request, res: Response) => {

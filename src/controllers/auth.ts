@@ -5,7 +5,7 @@ import CError from "../error/CError";
 import { validateDecoded, validateEmail, validateName, validatePassword, validateToken } from "../functions/validate";
 import { compareSalt, hashIt, saltIt } from "../functions/encrypt";
 import { isEmailTaken, isNameTaken } from "../functions/query";
-import { UserSQL } from "../config/setup/users";
+import { UserSQL } from "../config/users";
 import { secretKey } from "../config/secretKey";
 
 export const createUser = async (req: Request, res: Response) => {

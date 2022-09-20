@@ -6,6 +6,7 @@ import helmet from "helmet";
 import appRoute from "../routes/appRoute";
 import authRoute from "../routes/authRoute";
 import usersRoute from "../routes/usersRoute";
+import companiesRoute from "../routes/companiesRoute";
 import actionsRoute from "../routes/actionsRoute";
 
 import { errorMiddleware } from "../error/errorMiddleware";
@@ -21,6 +22,7 @@ app.use(morgan("dev"));
 app.use("/", appRoute);
 app.use("/auth", authRoute);
 app.use("/users", usersRoute);
+app.use("/companies", companiesRoute);
 app.use("/actions", actionsRoute);
 
 app.use(errorMiddleware);

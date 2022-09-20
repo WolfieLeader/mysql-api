@@ -1,23 +1,6 @@
 import { saltIt } from "../../functions/encrypt";
 import { stringToBigNumber } from "../../functions/format";
-
-export interface User {
-  name: string;
-  netWorth?: string;
-  hobbies?: string[];
-  email: string;
-  password: string;
-}
-
-export interface UserSQL {
-  id: number;
-  name: string;
-  netWorth: number;
-  hobbies: string[] | null;
-  email: string;
-  password: string;
-  createdAt: any;
-}
+import { User } from "../users";
 
 export const defaultUsers: User[] = [
   {
