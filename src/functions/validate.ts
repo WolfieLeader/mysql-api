@@ -83,3 +83,12 @@ export const validateToken = (token: unknown): boolean => {
   validateDecoded(decoded);
   return true;
 };
+
+export const validateAuthorization = (authorization: unknown): boolean => {
+  if (!authorization) throw new CError("Missing Authorization", 400);
+  if (typeof authorization !== "string") throw new CError("Invalid Authorization Type", 400);
+  if (!authorization.startsWith("Bearer")) throw new CError("Invalid Authorization", 400);
+  const token = authorization.split(" ")[1];
+  validateToken(token);
+  return true;
+};

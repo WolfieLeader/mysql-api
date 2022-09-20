@@ -2,7 +2,14 @@ import { NextFunction, Request, Response } from "express";
 import jsonwebtoken from "jsonwebtoken";
 import pool from "../config/sql/pool";
 import CError from "../error/CError";
-import { validateDecoded, validateEmail, validateName, validatePassword, validateToken } from "../functions/validate";
+import {
+  validateAuthorization,
+  validateDecoded,
+  validateEmail,
+  validateName,
+  validatePassword,
+  validateToken,
+} from "../functions/validate";
 import { compareSalt, hashIt, saltIt } from "../functions/encrypt";
 import { isEmailTaken, isNameTaken } from "../functions/query";
 import { UserSQL } from "../config/users";
@@ -28,20 +35,24 @@ export const loginUser = async (req: Request, res: Response) => {
       if (!comparedPasswords) throw new CError("Invalid password", 401);
       const jwtKey = hashIt(secretKey);
       const token = jsonwebtoken.sign({ id: userObj.id }, jwtKey, { expiresIn: "5m" });
-      res.status(200).json({ token });
+      res.status(200).json({ token: token });
     }
   }
 };
 
 export const authToken = (req: Request, res: Response, next: NextFunction) => {
-  const { token } = req.body;
-  if (validateToken(token)) {
-    const jwtKey = hashIt(secretKey);
-    const decoded = jsonwebtoken.verify(token, jwtKey);
-    if (validateDecoded(decoded)) {
-      const { id } = decoded as { id: number };
-      req.body.id = id;
-      next();
+  const { authorization } = req.headers;
+  if (validateAuthorization(authorization)) {
+    //@ts-ignore
+    const token = authorization.split(" ")[1];
+    if (validateToken(token)) {
+      const jwtKey = hashIt(secretKey);
+      const decoded = jsonwebtoken.verify(token, jwtKey);
+      if (validateDecoded(decoded)) {
+        const { id } = decoded as { id: number };
+        res.locals.id = id;
+        next();
+      }
     }
   }
 };

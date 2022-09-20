@@ -3,7 +3,7 @@ import request from "supertest";
 import app from "../config/app";
 import pool from "../config/sql/pool";
 
-describe("Testing Users Route", () => {
+describe("Testing Users", () => {
   //Opens the server before all the tests
   let server: any;
   beforeAll(async () => {
@@ -63,6 +63,51 @@ describe("Testing Users Route", () => {
       });
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty("token");
+      expect(res.body.token).not.toBe("");
+    });
+  });
+  describe("User Actions", () => {
+    it("Should change the user's name", async () => {
+      const res1 = await request(app).post("/auth/login").send({
+        email: "test@testnet.com",
+        password: "SecurePassword123",
+      });
+      const res2 = await request(app).put("/actions/name").set("Authorization", `Bearer ${res1.body.token}`).send({
+        name: "Test2",
+      });
+      expect(res2.statusCode).toBe(200);
+      expect(res2.body.message).toBe("Name changed successfully");
+      expect(res2.body.name).toBe("Test2");
+    });
+    it("Should change the user's email", async () => {
+      const res1 = await request(app).post("/auth/login").send({
+        email: "test@testnet.com",
+        password: "SecurePassword123",
+      });
+      const res2 = await request(app).put("/actions/email").set("Authorization", `Bearer ${res1.body.token}`).send({
+        email: "test2@testnet.com",
+      });
+      expect(res2.statusCode).toBe(200);
+      expect(res2.body.message).toBe("Email changed successfully");
+      expect(res2.body.email).toBe("test2@testnet.com");
+    });
+    it("Should change the user's hobbies", async () => {
+      const res1 = await request(app).post("/auth/login").send({
+        email: "test2@testnet.com",
+        password: "SecurePassword123",
+      });
+      const res2 = await request(app)
+        .put("/actions/hobbies")
+        .set("Authorization", `Bearer ${res1.body.token}`)
+        .send({
+          hobbies: ["Hobby1", "Hobby2"],
+        });
+      expect(res2.statusCode).toBe(200);
+      expect(res2.body.message).toBe("Hobbies changed successfully");
+      expect(res2.body.hobbies).toBeInstanceOf(Array);
+      expect(res2.body.hobbies.length).toBe(2);
+      expect(res2.body.hobbies[0]).toBe("Hobby1");
+      expect(res2.body.hobbies[1]).toBe("Hobby2");
     });
   });
 });

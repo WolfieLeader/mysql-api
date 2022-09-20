@@ -6,8 +6,8 @@ import { changeName, changeEmail, changeHobbies } from "../controllers/users/act
 const actionsRoute = express.Router();
 
 actionsRoute.use(protect(authToken));
-actionsRoute.post("/name", protect(changeName));
-actionsRoute.post("/email", protect(changeEmail));
-actionsRoute.post("/hobbies", protect(changeHobbies));
+actionsRoute.put("/name", protect(changeName));
+actionsRoute.put("/email", protect(changeEmail));
+actionsRoute.put("/hobbies", protect(changeHobbies));
 
 export default actionsRoute;
