@@ -4,15 +4,15 @@ import pool from "../config/sql/pool";
 import CError from "../error/CError";
 import { validateDecoded, validateEmail, validateName, validatePassword, validateToken } from "../functions/validate";
 import { compareSalt, hashIt, saltIt } from "../functions/encrypt";
-import { isEmailTaken } from "../functions/query";
+import { isEmailTaken, isNameTaken } from "../functions/query";
 import { UserSQL } from "../config/setup/users";
 import { secretKey } from "../config/secretKey";
 
 export const createUser = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
   if (validateName(name) && validateEmail(email) && validatePassword(password)) {
-    const isTaken = await isEmailTaken(email);
-    if (isTaken) throw new CError("Email already taken", 409);
+    if (await isEmailTaken(email)) throw new CError("Email already taken", 409);
+    if (await isNameTaken(name)) throw new CError("Name already taken", 409);
     await pool.execute("INSERT INTO users(name,email,password) VALUES(?,?,?)", [name, email, saltIt(password)]);
     res.status(201).json({ message: "User created" });
   }

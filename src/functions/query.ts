@@ -8,6 +8,12 @@ export const isEmailTaken = async (email: string): Promise<boolean> => {
   return false;
 };
 
+export const isNameTaken = async (name: string): Promise<boolean> => {
+  const [takenName] = await pool.execute("SELECT id FROM users WHERE name = ?", [name]);
+  if (Array.isArray(takenName) && takenName.length > 0) return true;
+  return false;
+};
+
 export const getUserIdByName = async (name: unknown): Promise<number> => {
   if (validateName(name)) {
     const [user] = await pool.execute("SELECT id FROM users WHERE name = ?", [name]);
