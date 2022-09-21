@@ -10,7 +10,14 @@
     "test": "jest",
     "test:watch": "jest --watch"
   },
-  "keywords": [],
+  "keywords": [
+    "typescript",
+    "nodejs",
+    "express",
+    "rest",
+    "mysql",
+    "database"
+  ],
   "license": "ISC",
   "author": "WolfieLeader",
   "dependencies": {

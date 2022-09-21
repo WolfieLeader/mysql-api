@@ -1,4 +1,4 @@
-import { UserSQL } from "../config/users";
+import { UserSQL } from "../interfaces/users";
 import pool from "../config/sql/pool";
 import { validateName } from "./validate";
 

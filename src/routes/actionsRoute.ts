@@ -1,7 +1,7 @@
 import express from "express";
 import { protect } from "../error/errorMiddleware";
 import { authToken } from "../controllers/auth";
-import { changeName, changeEmail, changeHobbies } from "../controllers/users/actions";
+import { changeName, changeEmail, changeHobbies } from "../controllers/actions";
 
 const actionsRoute = express.Router();
 

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import CError from "../../error/CError";
-import pool from "../../config/sql/pool";
-import { isEmailTaken, isNameTaken } from "../../functions/query";
-import { validateEmail, validateName, validateId, validateHobbies } from "../../functions/validate";
+import CError from "../error/CError";
+import pool from "../config/sql/pool";
+import { isEmailTaken, isNameTaken } from "../functions/query";
+import { validateEmail, validateName, validateId, validateHobbies } from "../functions/validate";
 
 export const changeName = async (req: Request, res: Response) => {
   const { id } = res.locals;

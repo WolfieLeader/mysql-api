@@ -17,8 +17,8 @@ describe("GET /", () => {
     await pool.end();
   });
   //The tests
-  it("should return 200", async () => {
+  it("Should return status code of 200", async () => {
     const response = await request.get("/");
-    expect(response.status).toBe(200);
+    expect(response.statusCode).toBe(200);
   });
 });

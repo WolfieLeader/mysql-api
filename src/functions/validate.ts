@@ -2,6 +2,7 @@ import CError from "../error/CError";
 import jsonwebtoken from "jsonwebtoken";
 import { hashIt } from "./encrypt";
 import { secretKey } from "../config/secretKey";
+import { isValidNumber, isValidString } from "./confirm";
 
 const isEmail = (email: string): boolean => {
   const re =
@@ -20,28 +21,30 @@ const hasLettersDigitsSpacesSymbolsOnly = (string: string): boolean => {
 };
 
 export const validateEmail = (email: unknown): boolean => {
-  if (!email) throw new CError("Missing Email", 400);
-  if (typeof email !== "string") throw new CError("Invalid Email Type", 400);
-  if (email.length > 255) throw new CError("Email too long", 400);
-  if (!isEmail(email)) throw new CError("Invalid Email", 400);
-  return true;
+  if (isValidString(email, "Email") && typeof email === "string") {
+    if (!isEmail(email)) throw new CError("Invalid Email", 400);
+    return true;
+  }
+  return false;
 };
 
 export const validateName = (name: unknown): boolean => {
-  if (!name) throw new CError("Missing Name", 400);
-  if (typeof name !== "string") throw new CError("Invalid Name Type", 400);
-  if (name.length < 4 || name.length > 20) throw new CError("Name must be between 4 and 20 characters", 400);
-  if (!hasLettersDigitsSpacesOnly(name)) throw new CError("Invalid Name", 400);
-  return true;
+  if (isValidString(name, "Name") && typeof name === "string") {
+    if (name.length < 4 || name.length > 20) throw new CError("Name must be between 4 and 20 characters", 400);
+    if (!hasLettersDigitsSpacesOnly(name)) throw new CError("Invalid Name", 400);
+    return true;
+  }
+  return false;
 };
 
 export const validatePassword = (password: unknown): boolean => {
-  if (!password) throw new CError("Missing Password", 400);
-  if (typeof password !== "string") throw new CError("Invalid Password Type", 400);
-  if (password.length < 8 || password.length > 20)
-    throw new CError("Password must be between 8 and 20 characters", 400);
-  if (!hasLettersDigitsSpacesSymbolsOnly(password)) throw new CError("Invalid Password", 400);
-  return true;
+  if (isValidString(password, "Password") && typeof password === "string") {
+    if (password.length < 8 || password.length > 20)
+      throw new CError("Password must be between 8 and 20 characters", 400);
+    if (!hasLettersDigitsSpacesSymbolsOnly(password)) throw new CError("Invalid Password", 400);
+    return true;
+  }
+  return false;
 };
 
 export const validateHobbies = (hobbies: unknown): boolean => {
@@ -59,11 +62,8 @@ export const validateHobbies = (hobbies: unknown): boolean => {
 };
 
 export const validateId = (id: unknown): boolean => {
-  if (!id) throw new CError("Missing Id", 400);
-  if (typeof id !== "number") throw new CError("Invalid Id Type", 400);
-  if (id < 1) throw new CError("Invalid Id", 400);
-  if (!Number.isSafeInteger(id)) throw new CError("Out Of Range", 400);
-  return true;
+  if (isValidNumber(id, "Id")) return true;
+  return false;
 };
 
 export const validateDecoded = (decoded: unknown): boolean => {

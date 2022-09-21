@@ -1,6 +1,6 @@
 import express from "express";
 import { protect } from "../error/errorMiddleware";
-import { getCompanies, getCompaniesById } from "../controllers/companies/get";
+import { getCompanies, getCompaniesById } from "../controllers/get";
 
 const companiesRoute = express.Router();
 
