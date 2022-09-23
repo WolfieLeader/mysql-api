@@ -21,30 +21,26 @@ const hasLettersDigitsSpacesSymbolsOnly = (string: string): boolean => {
 };
 
 export const validateEmail = (email: unknown): boolean => {
-  if (isValidString(email, "Email") && typeof email === "string") {
-    if (!isEmail(email)) throw new CError("Invalid Email", 400);
-    return true;
-  }
-  return false;
+  isValidString(email, "Email");
+  if (!isEmail(email as string)) throw new CError("Invalid Email", 400);
+  return true;
 };
 
 export const validateName = (name: unknown): boolean => {
-  if (isValidString(name, "Name") && typeof name === "string") {
-    if (name.length < 4 || name.length > 20) throw new CError("Name must be between 4 and 20 characters", 400);
-    if (!hasLettersDigitsSpacesOnly(name)) throw new CError("Invalid Name", 400);
-    return true;
-  }
-  return false;
+  isValidString(name, "Name");
+  const nameStr = name as string;
+  if (nameStr.length < 4 || nameStr.length > 20) throw new CError("Name must be between 4 and 20 characters", 400);
+  if (!hasLettersDigitsSpacesOnly(nameStr)) throw new CError("Invalid Name", 400);
+  return true;
 };
 
 export const validatePassword = (password: unknown): boolean => {
-  if (isValidString(password, "Password") && typeof password === "string") {
-    if (password.length < 8 || password.length > 20)
-      throw new CError("Password must be between 8 and 20 characters", 400);
-    if (!hasLettersDigitsSpacesSymbolsOnly(password)) throw new CError("Invalid Password", 400);
-    return true;
-  }
-  return false;
+  isValidString(password, "Password");
+  const passwordStr = password as string;
+  if (passwordStr.length < 8 || passwordStr.length > 20)
+    throw new CError("Password must be between 8 and 20 characters", 400);
+  if (!hasLettersDigitsSpacesSymbolsOnly(passwordStr)) throw new CError("Invalid Password", 400);
+  return true;
 };
 
 export const validateHobbies = (hobbies: unknown): boolean => {
@@ -53,17 +49,17 @@ export const validateHobbies = (hobbies: unknown): boolean => {
   if (hobbies.length === 0) throw new CError("Missing Hobbies", 400);
   if (hobbies.length > 5) throw new CError("Too Many Hobbies", 400);
   hobbies.forEach((hobby: unknown) => {
-    if (!hobby) throw new CError("Missing Hobby", 400);
-    if (typeof hobby !== "string") throw new CError("Invalid Hobby Type", 400);
-    if (hobby.length < 2 || hobby.length > 30) throw new CError("Hobby must be between 2 and 30 characters", 400);
-    if (!hasLettersDigitsSpacesOnly(hobby)) throw new CError("Invalid Hobby", 400);
+    isValidString(hobby, "Hobby");
+    const hobbyStr = hobby as string;
+    if (hobbyStr.length < 2 || hobbyStr.length > 30) throw new CError("Hobby must be between 2 and 30 characters", 400);
+    if (!hasLettersDigitsSpacesOnly(hobbyStr)) throw new CError("Invalid Hobby", 400);
   });
   return true;
 };
 
 export const validateId = (id: unknown): boolean => {
-  if (isValidNumber(id, "Id")) return true;
-  return false;
+  isValidNumber(id, "Id");
+  return true;
 };
 
 export const validateDecoded = (decoded: unknown): boolean => {
@@ -90,5 +86,22 @@ export const validateAuthorization = (authorization: unknown): boolean => {
   if (!authorization.startsWith("Bearer")) throw new CError("Invalid Authorization", 400);
   const token = authorization.split(" ")[1];
   validateToken(token);
+  return true;
+};
+
+export const validateFoundedAt = (foundedAt: unknown): boolean => {
+  isValidNumber(foundedAt, "Founded At");
+  const foundedAtNum = foundedAt as number;
+  const currentYear = new Date().getUTCFullYear();
+  if (foundedAtNum < 0 || foundedAtNum > currentYear) throw new CError("Invalid Founded At", 400);
+  return true;
+};
+
+export const validateCompanyName = (name: unknown): boolean => {
+  isValidString(name, "Company Name");
+  const nameStr = name as string;
+  if (nameStr.length < 2 || nameStr.length > 30)
+    throw new CError("Company Name must be between 4 and 20 characters", 400);
+  if (!hasLettersDigitsSpacesOnly(nameStr)) throw new CError("Invalid Company Name", 400);
   return true;
 };

@@ -12,47 +12,45 @@ import {
 } from "../functions/validate";
 import { compareSalt, hashIt, saltIt } from "../functions/encrypt";
 import { isEmailTaken, isNameTaken } from "../functions/query";
-import { UserSQL } from "../config/users";
+import { UserSQL } from "../interfaces/users";
 import { secretKey } from "../config/secretKey";
 
 export const createUser = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
-  if (validateName(name) && validateEmail(email) && validatePassword(password)) {
-    if (await isEmailTaken(email)) throw new CError("Email already taken", 409);
-    if (await isNameTaken(name)) throw new CError("Name already taken", 409);
-    await pool.execute("INSERT INTO users(name,email,password) VALUES(?,?,?)", [name, email, saltIt(password)]);
-    res.status(201).json({ message: "User created" });
-  }
+  validateName(name);
+  validateEmail(email);
+  validatePassword(password);
+  if (await isEmailTaken(email)) throw new CError("Email already taken", 409);
+  if (await isNameTaken(name)) throw new CError("Name already taken", 409);
+  await pool.execute("INSERT INTO users(name,email,password) VALUES(?,?,?)", [name, email, saltIt(password)]);
+  res.status(201).json({ message: "User created" });
 };
 
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  if (validateEmail(email) && validatePassword(password)) {
-    const [user] = await pool.execute("SELECT * FROM users WHERE email = ?", [email.toLowerCase()]);
-    if (Array.isArray(user) && user.length > 0) {
-      const [userObj] = user as UserSQL[];
-      const comparedPasswords = compareSalt(userObj.password, password);
-      if (!comparedPasswords) throw new CError("Invalid password", 401);
-      const jwtKey = hashIt(secretKey);
-      const token = jsonwebtoken.sign({ id: userObj.id }, jwtKey, { expiresIn: "5m" });
-      res.status(200).json({ token: token });
-    }
+  validateEmail(email);
+  validatePassword(password);
+  const [user] = await pool.execute("SELECT * FROM users WHERE email = ?", [email.toLowerCase()]);
+  if (Array.isArray(user) && user.length > 0) {
+    const [userObj] = user as UserSQL[];
+    const comparedPasswords = compareSalt(userObj.password, password);
+    if (!comparedPasswords) throw new CError("Invalid password", 401);
+    const jwtKey = hashIt(secretKey);
+    const token = jsonwebtoken.sign({ id: userObj.id }, jwtKey, { expiresIn: "5m" });
+    res.status(200).json({ token: token });
   }
 };
 
 export const authToken = (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
-  if (validateAuthorization(authorization)) {
-    //@ts-ignore
-    const token = authorization.split(" ")[1];
-    if (validateToken(token)) {
-      const jwtKey = hashIt(secretKey);
-      const decoded = jsonwebtoken.verify(token, jwtKey);
-      if (validateDecoded(decoded)) {
-        const { id } = decoded as { id: number };
-        res.locals.id = id;
-        next();
-      }
-    }
-  }
+  validateAuthorization(authorization);
+  const authorizationStr = authorization as string;
+  const token = authorizationStr.split(" ")[1];
+  validateToken(token);
+  const jwtKey = hashIt(secretKey);
+  const decoded = jsonwebtoken.verify(token, jwtKey);
+  validateDecoded(decoded);
+  const { id } = decoded as { id: number };
+  res.locals.id = id;
+  next();
 };
