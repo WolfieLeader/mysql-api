@@ -1,6 +1,6 @@
 import { saltIt } from "../../functions/encrypt";
 import { stringToBigNumber } from "../../functions/format";
-import { User } from "../users";
+import { User } from "../../interfaces/users";
 
 export const defaultUsers: User[] = [
   {

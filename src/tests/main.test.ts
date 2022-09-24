@@ -18,7 +18,7 @@ describe("GET /", () => {
   });
   //The tests
   it("Should return status code of 200", async () => {
-    const response = await request.get("/");
-    expect(response.statusCode).toBe(200);
+    const res = await request.get("/");
+    expect(res.statusCode).toBe(200);
   });
 });

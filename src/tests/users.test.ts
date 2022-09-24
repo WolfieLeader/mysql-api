@@ -16,8 +16,8 @@ describe("Testing Users", () => {
   });
   describe("GET /users", () => {
     it("Should reset the database", async () => {
-      const response = await request(app).post("/reset");
-      expect(response.status).toBe(200);
+      const res = await request(app).post("/reset");
+      expect(res.status).toBe(200);
     });
     //The tests
     it("Should get all users", async () => {
@@ -108,6 +108,19 @@ describe("Testing Users", () => {
       expect(res2.body.hobbies.length).toBe(2);
       expect(res2.body.hobbies[0]).toBe("Hobby1");
       expect(res2.body.hobbies[1]).toBe("Hobby2");
+    });
+    it("Should create a new company", async () => {
+      const res1 = await request(app).post("/auth/login").send({
+        email: "test2@testnet.com",
+        password: "SecurePassword123",
+      });
+      const res2 = await request(app).post("/actions/company").set("Authorization", `Bearer ${res1.body.token}`).send({
+        name: "Test Company",
+        foundedAt: 2000,
+      });
+
+      expect(res2.statusCode).toBe(201);
+      expect(res2.body.message).toBe("Company created successfully");
     });
   });
 });

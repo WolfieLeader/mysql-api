@@ -1,5 +1,5 @@
 import { getUserIdByName } from "../../functions/query";
-import { Company } from "../companies";
+import { Company } from "../../interfaces/companies";
 
 export const defaultCompanies: Company[] = [
   {

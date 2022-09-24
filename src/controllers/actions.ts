@@ -47,6 +47,7 @@ export const createCompany = async (req: Request, res: Response) => {
   validateId(id);
   validateFoundedAt(foundedAt);
   validateCompanyName(name);
-  await pool.execute("INSERT INTO companies (name, foundedAt, ownerId) VALUES (?, ?, ?)", [name, foundedAt, id]);
+  console.log(id, name, foundedAt);
+  await pool.execute("INSERT INTO companies (name, foundedAt, founderId) VALUES (?, ?, ?)", [name, foundedAt, id]);
   res.status(201).json({ message: "Company created successfully", name: name, foundedAt: foundedAt });
 };
