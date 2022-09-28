@@ -22,7 +22,7 @@ export const defaultUsers: User[] = [
     netWorth: "259.8B",
     hobbies: ["Programming", "Lunching Rockets", "Tweeting"],
     email: "elon@tesla.com",
-    password: "Mars=Earth2.0",
+    password: "MarsIsEarth2.0",
   },
   {
     name: "Jeff Bezos",

@@ -1,5 +1,6 @@
 import CError from "./CError";
 
+/**Makes every other type of error to CError*/
 const handleError = (err: unknown) => {
   if (err instanceof CError) return err;
   if (err instanceof Error) return new CError(err.message);

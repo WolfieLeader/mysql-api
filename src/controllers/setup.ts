@@ -1,14 +1,15 @@
 import { Request, Response } from "express";
-import handleError from "../error/handleError";
 import { formattedUsers } from "../config/setup/users";
 import { unformattedCompanies } from "../config/setup/companies";
 import pool from "../config/sql/pool";
 import { connectionSettings } from "../config/sql/connection";
 
+/**Showing the database connection settings */
 export const getSettings = (req: Request, res: Response) => {
   return res.status(200).json({ settings: connectionSettings });
 };
 
+/**This function will reset the tables in the database */
 export const resetTables = async (req: Request, res: Response) => {
   const dropQueries = [
     //Remove all companies

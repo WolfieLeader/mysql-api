@@ -1,5 +1,6 @@
 import CError from "../error/CError";
 
+/**Checks if the number given is a valid number*/
 export const isValidNumber = (number: unknown, param = "Number", allowZero = false): boolean => {
   if (number === null || number === undefined) throw new CError(`Missing ${param}`, 400);
   if (typeof number !== "number") throw new CError(`Invalid ${param} Type`, 400);
@@ -9,6 +10,7 @@ export const isValidNumber = (number: unknown, param = "Number", allowZero = fal
   return true;
 };
 
+/**Checks if the string given is a valid string*/
 export const isValidString = (string: unknown, param = "String"): boolean => {
   if (!string) throw new CError(`Missing ${param}`, 400);
   if (typeof string !== "string") throw new CError(`Invalid ${param} Type`, 400);
@@ -16,6 +18,7 @@ export const isValidString = (string: unknown, param = "String"): boolean => {
   return true;
 };
 
+/**Checks if the string given is can be converted to a valid number*/
 export const isValidNumberString = (string: unknown, param = "Number", allowZero = false): boolean => {
   if (!string) throw new CError(`Missing ${param}`, 400);
   if (typeof string !== "string") throw new CError(`Invalid ${param} Type`, 400);

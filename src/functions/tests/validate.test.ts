@@ -25,7 +25,7 @@ const testEmail = () => {
   it("Should throw errors if the email is invalid", () => {
     expect(() => validateEmail(empty)).toThrow("Missing Email");
     expect(() => validateEmail(aNumber)).toThrow("Invalid Email Type");
-    expect(() => validateEmail(strLength(256))).toThrow("Email too long");
+    expect(() => validateEmail(strLength(256))).toThrow("Email Too Long");
     expect(() => validateEmail("test@gmail..com")).toThrow("Invalid Email");
   });
 };
@@ -63,7 +63,7 @@ const testId = () => {
   it("Should throw errors if id is invalid", () => {
     expect(() => validateId(empty)).toThrow("Missing Id");
     expect(() => validateId(aString)).toThrow("Invalid Id Type");
-    expect(() => validateId(-1)).toThrow("Invalid Id");
+    expect(() => validateId(-1)).toThrow("Id Must Be Positive");
     expect(() => validateId(bigNumber)).toThrow("Out Of Range");
   });
 };
@@ -92,19 +92,19 @@ const testHobbies = () => {
 const testToken = () => {
   const jwtKey = hashIt(secretKey);
   it("Should return true if token is valid", () => {
-    const token = jsonwebtoken.sign({ id: 23 }, jwtKey, { expiresIn: "5m" });
+    const token = jsonwebtoken.sign({ userId: 23 }, jwtKey, { expiresIn: "5m" });
     expect(validateToken(token)).toBe(true);
   });
   it("Should throw errors if token is invalid", async () => {
     expect(() => validateToken(empty)).toThrow("Missing Token");
     expect(() => validateToken(aNumber)).toThrow("Invalid Token Type");
     expect(() => validateToken(aString)).toThrow("jwt malformed");
-    const shortToken = jsonwebtoken.sign({ id: 23 }, jwtKey, { expiresIn: "500ms" });
+    const shortToken = jsonwebtoken.sign({ userId: 23 }, jwtKey, { expiresIn: "500ms" });
     await new Promise((resolve) => setTimeout(resolve, 600));
     expect(() => validateToken(shortToken)).toThrow("jwt expired");
-    const fakeToken = jsonwebtoken.sign({ id: 23 }, "Fake Secret", { expiresIn: "5m" });
+    const fakeToken = jsonwebtoken.sign({ userId: 23 }, "Fake Secret", { expiresIn: "5m" });
     expect(() => validateToken(fakeToken)).toThrow("invalid signature");
-    const manipulatedToken = jsonwebtoken.sign({ id: 23 }, jwtKey, { expiresIn: "5m" }).slice(2, -1);
+    const manipulatedToken = jsonwebtoken.sign({ userId: 23 }, jwtKey, { expiresIn: "5m" }).slice(2, -1);
     expect(() => validateToken(manipulatedToken)).toThrow("invalid token");
   });
 };
@@ -112,16 +112,16 @@ const testToken = () => {
 const testDecoded = () => {
   const jwtKey = hashIt(secretKey);
   it("Should return true if decoded is valid", () => {
-    const decoded = jsonwebtoken.decode(jsonwebtoken.sign({ id: 23 }, jwtKey, { expiresIn: "5m" }));
+    const decoded = jsonwebtoken.decode(jsonwebtoken.sign({ userId: 23 }, jwtKey, { expiresIn: "5m" }));
     expect(validateDecoded(decoded)).toBe(true);
   });
   it("Should throw errors if decoded is invalid", () => {
     expect(() => validateDecoded(empty)).toThrow("Missing Token Content");
     expect(() => validateDecoded(aNumber)).toThrow("Invalid Token Content Type");
     expect(() => validateDecoded({})).toThrow("Missing Id");
-    expect(() => validateDecoded({ id: aString })).toThrow("Invalid Id Type");
-    expect(() => validateDecoded({ id: -1 })).toThrow("Invalid Id");
-    expect(() => validateDecoded({ id: bigNumber })).toThrow("Out Of Range");
+    expect(() => validateDecoded({ userId: aString })).toThrow("Invalid Id Type");
+    expect(() => validateDecoded({ userId: -1 })).toThrow("Id Must Be Positive");
+    expect(() => validateDecoded({ userId: bigNumber })).toThrow("Out Of Range");
   });
 };
 

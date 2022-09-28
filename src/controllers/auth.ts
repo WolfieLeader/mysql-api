@@ -15,6 +15,7 @@ import { isEmailTaken, isNameTaken } from "../functions/query";
 import { UserSQL } from "../interfaces/users";
 import { secretKey } from "../config/secretKey";
 
+/**Creating a new user */
 export const createUser = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
   validateName(name);
@@ -26,6 +27,7 @@ export const createUser = async (req: Request, res: Response) => {
   res.status(201).json({ message: "User created" });
 };
 
+/**Logging in existing user */
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   validateEmail(email);
@@ -36,11 +38,12 @@ export const loginUser = async (req: Request, res: Response) => {
     const comparedPasswords = compareSalt(userObj.password, password);
     if (!comparedPasswords) throw new CError("Invalid password", 401);
     const jwtKey = hashIt(secretKey);
-    const token = jsonwebtoken.sign({ id: userObj.id }, jwtKey, { expiresIn: "5m" });
+    const token = jsonwebtoken.sign({ userId: userObj.id }, jwtKey, { expiresIn: "5m" });
     res.status(200).json({ token: token });
   }
 };
 
+/**Authorizing the user */
 export const authToken = (req: Request, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
   validateAuthorization(authorization);
@@ -50,7 +53,7 @@ export const authToken = (req: Request, res: Response, next: NextFunction) => {
   const jwtKey = hashIt(secretKey);
   const decoded = jsonwebtoken.verify(token, jwtKey);
   validateDecoded(decoded);
-  const { id } = decoded as { id: number };
-  res.locals.id = id;
+  const { userId } = decoded as { userId: number };
+  res.locals.userId = userId;
   next();
 };

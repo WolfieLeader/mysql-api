@@ -4,16 +4,17 @@ import app from "../config/app";
 import pool from "../config/sql/pool";
 
 describe("Testing Users", () => {
-  //Opens the server before all the tests
+  /**Opens the server before all the tests */
   let server: any;
   beforeAll(async () => {
     server = await app.listen(3000);
   });
-  //Closes the server and the pool after all the tests
+  /**Closes the server and the pool after all the tests */
   afterAll(async () => {
     await server.close();
     await pool.end();
   });
+  /**The tests*/
   describe("GET /companies", () => {
     it("Should reset the database", async () => {
       const res = await request(app).post("/reset");

@@ -23,9 +23,9 @@ describe("Testing format.ts Folder", () => {
       const params = 2 ** 53;
       expect(() => formatParamsToNumbers(params)).toThrow("Out Of Range");
     });
-    it("Should throw Number Must Be Positive", () => {
+    it("Should throw Params Must Be Positive", () => {
       const params = -1;
-      expect(() => formatParamsToNumbers(params)).toThrow("Number Must Be Positive");
+      expect(() => formatParamsToNumbers(params)).toThrow("Params Must Be Positive");
     });
     it("Should return the number in an array", () => {
       const params = "1";
@@ -35,9 +35,9 @@ describe("Testing format.ts Folder", () => {
       const params = 2 ** 53;
       expect(() => formatParamsToNumbers(params.toString())).toThrow("Out Of Range");
     });
-    it("Should throw Number Must Be Positive", () => {
+    it("Should throw Params Must Be Positive", () => {
       const params = "-1";
-      expect(() => formatParamsToNumbers(params)).toThrow("Number Must Be Positive");
+      expect(() => formatParamsToNumbers(params)).toThrow("Params Must Be Positive");
     });
     it("Should throw Invalid Params Content", () => {
       const params = "1d3cf";
