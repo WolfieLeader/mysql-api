@@ -1,7 +1,7 @@
 import { getUserIdByName } from "../../functions/query";
-import { Company } from "../../interfaces/companies";
+import { ICompany } from "../../interfaces/companies";
 
-export const defaultCompanies: Company[] = [
+export const defaultCompanies: ICompany[] = [
   {
     name: "Meta",
     founder: "Mark Zuckerberg",

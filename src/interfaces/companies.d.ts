@@ -1,10 +1,10 @@
-export interface Company {
+export interface ICompany {
   name: string;
   founder: string | string[];
   foundedAt: number;
 }
 
-export interface CompanySQL {
+export interface ICompanySQL {
   id: number;
   name: string;
   founderId: number;

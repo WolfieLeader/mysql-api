@@ -1,4 +1,4 @@
-import { UserSQL } from "../interfaces/users";
+import { IUserSQL } from "../interfaces/users";
 import pool from "../config/sql/pool";
 import { validateName } from "./validate";
 
@@ -21,7 +21,7 @@ export const getUserIdByName = async (name: unknown): Promise<number> => {
   validateName(name);
   const [user] = await pool.execute("SELECT id FROM users WHERE name = ?", [name as string]);
   if (Array.isArray(user) && user.length > 0) {
-    const [userObj] = user as UserSQL[];
+    const [userObj] = user as IUserSQL[];
     return userObj.id;
   }
   return -1;

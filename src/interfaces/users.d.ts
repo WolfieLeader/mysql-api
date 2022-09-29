@@ -1,4 +1,4 @@
-export interface User {
+export interface IUser {
   name: string;
   netWorth?: string;
   hobbies?: string[];
@@ -6,7 +6,7 @@ export interface User {
   password: string;
 }
 
-export interface UserSQL {
+export interface IUserSQL {
   id: number;
   name: string;
   netWorth: number;

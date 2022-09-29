@@ -16,6 +16,7 @@
     "express",
     "rest",
     "mysql",
+    "sql",
     "database"
   ],
   "license": "ISC",

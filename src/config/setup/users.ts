@@ -1,8 +1,8 @@
 import { saltIt } from "../../functions/encrypt";
 import { stringToBigNumber } from "../../functions/format";
-import { User } from "../../interfaces/users";
+import { IUser } from "../../interfaces/users";
 
-export const defaultUsers: User[] = [
+export const defaultUsers: IUser[] = [
   {
     name: "Mark Zuckerberg",
     netWorth: "57.7B",
