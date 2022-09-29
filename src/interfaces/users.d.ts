@@ -13,5 +13,5 @@ export interface IUserSQL {
   hobbies: string[] | null;
   email: string;
   password: string;
-  createdAt: any;
+  createdAt: Date;
 }
