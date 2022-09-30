@@ -1,8 +1,8 @@
 import CError from "../../error/CError";
 import { getUserIdByName } from "../../functions/query";
-import { ICompany } from "../../interfaces/companies";
+import { INewCompany } from "../../interfaces/companies";
 
-export const defaultCompanies: ICompany[] = [
+export const defaultCompanies: INewCompany[] = [
   {
     name: "Meta",
     founders: ["Mark Zuckerberg", "Eduardo Saverin"],

@@ -1,8 +1,8 @@
 import { saltIt } from "../../functions/encrypt";
 import { stringToBigNumber } from "../../functions/format";
-import { IUser } from "../../interfaces/users";
+import { INewUser } from "../../interfaces/users";
 
-export const defaultUsers: IUser[] = [
+export const defaultUsers: INewUser[] = [
   {
     name: "Steve Jobs",
     email: "steve@apple.com",

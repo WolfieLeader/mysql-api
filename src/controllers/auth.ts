@@ -12,7 +12,7 @@ import {
 } from "../functions/validate";
 import { compareSalt, hashIt, saltIt } from "../functions/encrypt";
 import { isEmailTaken, isNameTaken } from "../functions/query";
-import { IUserSQL } from "../interfaces/users";
+import { IUser } from "../interfaces/users";
 import { secretKey } from "../config/secretKey";
 
 /**Creating a new user */
@@ -34,7 +34,7 @@ export const loginUser = async (req: Request, res: Response) => {
   validatePassword(password);
   const [user] = await pool.execute("SELECT * FROM users WHERE email = ?", [email.toLowerCase()]);
   if (Array.isArray(user) && user.length > 0) {
-    const [userObj] = user as IUserSQL[];
+    const [userObj] = user as IUser[];
     const comparedPasswords = compareSalt(userObj.password, password);
     if (!comparedPasswords) throw new CError("Invalid password", 401);
     const jwtKey = hashIt(secretKey);

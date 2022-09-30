@@ -1,4 +1,4 @@
-export interface IUser {
+export interface INewUser {
   name: string;
   netWorth?: string;
   hobbies?: string[];
@@ -6,7 +6,7 @@ export interface IUser {
   password: string;
 }
 
-export interface IUserSQL {
+export interface IUser {
   readonly id: number;
   name: string;
   netWorth: number;
