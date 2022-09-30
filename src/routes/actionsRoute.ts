@@ -8,6 +8,7 @@ import {
   createCompany,
   changeCompanyName,
   changeNetworth,
+  changeCompanyYear,
 } from "../controllers/actions";
 
 const actionsRoute = express.Router();
@@ -20,5 +21,6 @@ actionsRoute.put("/networth", protect(changeNetworth));
 actionsRoute.put("/hobbies", protect(changeHobbies));
 actionsRoute.post("/company", protect(createCompany));
 actionsRoute.put("/company-name", protect(changeCompanyName));
+actionsRoute.put("/company-year", protect(changeCompanyYear));
 
 export default actionsRoute;

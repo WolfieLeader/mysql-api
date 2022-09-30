@@ -1,12 +1,13 @@
 export interface ICompany {
   name: string;
-  founder: string | string[];
-  foundedAt: number;
+  founders: string | string[];
+  year?: number; // year of founding
 }
 
 export interface ICompanySQL {
-  id: number;
+  readonly id: number;
   name: string;
-  founderId: number;
-  foundedAt: number;
+  founder1: number;
+  founder2: number | null;
+  year: number;
 }

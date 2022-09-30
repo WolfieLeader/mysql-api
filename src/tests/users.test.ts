@@ -1,6 +1,7 @@
 import { expect, it, describe, afterAll, beforeAll } from "@jest/globals";
 import request from "supertest";
 import app from "../config/app";
+import { defaultUsers } from "../config/setup/users";
 import pool from "../config/sql/pool";
 import { bigNumberToString } from "../functions/format";
 
@@ -25,7 +26,7 @@ describe("Testing Users", () => {
       const res = await request(app).get("/users");
       expect(res.statusCode).toBe(200);
       expect(res.body).toBeInstanceOf(Array);
-      expect(res.body.length).toBe(5);
+      expect(res.body.length).toBe(defaultUsers.length);
     });
     it("Should get a user by id", async () => {
       const res = await request(app).get("/users/1,3,5");
@@ -40,7 +41,6 @@ describe("Testing Users", () => {
       expect(res.statusCode).toBe(200);
       expect(res.body).toBeInstanceOf(Array);
       expect(res.body.length).toBe(3);
-      expect(res.body[0].id).toBe(4);
     });
   });
   describe("Authentication", () => {
@@ -119,8 +119,7 @@ describe("Testing Users", () => {
       expect(res2.body.message).toBe("Hobbies changed successfully");
       expect(res2.body.hobbies).toBeInstanceOf(Array);
       expect(res2.body.hobbies.length).toBe(2);
-      expect(res2.body.hobbies[0]).toBe("Hobby1");
-      expect(res2.body.hobbies[1]).toBe("Hobby2");
+      expect(res2.body.hobbies).toEqual(["Hobby1", "Hobby2"]);
     });
     it("Should create a new company", async () => {
       const res1 = await request(app).post("/auth/login").send({
@@ -129,7 +128,7 @@ describe("Testing Users", () => {
       });
       const res2 = await request(app).post("/actions/company").set("Authorization", `Bearer ${res1.body.token}`).send({
         name: "Test Company",
-        foundedAt: 2000,
+        year: 2000,
       });
 
       expect(res2.statusCode).toBe(201);
@@ -144,11 +143,26 @@ describe("Testing Users", () => {
         .put("/actions/company-name")
         .set("Authorization", `Bearer ${res1.body.token}`)
         .send({
-          pre: "Test Company",
+          last: "Test Company",
           name: "Awesome Company",
         });
       expect(res2.statusCode).toBe(200);
       expect(res2.body.message).toBe("Company name changed successfully");
+    });
+    it("Should change the company's year", async () => {
+      const res1 = await request(app).post("/auth/login").send({
+        email: "test2@testnet.com",
+        password: "SecurePassword123",
+      });
+      const res2 = await request(app)
+        .put("/actions/company-year")
+        .set("Authorization", `Bearer ${res1.body.token}`)
+        .send({
+          name: "Awesome Company",
+          year: 2003,
+        });
+      expect(res2.statusCode).toBe(200);
+      expect(res2.body.message).toBe("Company year changed successfully");
     });
   });
 });

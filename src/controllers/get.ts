@@ -9,7 +9,10 @@ import { formatParamsToNumbers } from "../functions/format";
 /**Getting all the companies and the users who own them */
 export const getAll = async (req: Request, res: Response) => {
   const [results] = await pool.execute(
-    "SELECT companies.name AS Company,users.name AS FoundedBy FROM users RIGHT JOIN companies ON users.id=companies.founderId"
+    `SELECT companies.name AS Company,users.name AS Founder 
+      FROM companies LEFT JOIN users 
+      ON (companies.founder1=users.id OR companies.founder2=users.id)
+      ORDER BY Company ASC;`
   );
   if (!results) throw new CError("No results found", 404);
   if (!Array.isArray(results)) throw new CError("Results is not an array");

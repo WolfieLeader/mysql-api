@@ -7,7 +7,7 @@ import {
   validateName,
   validateId,
   validateHobbies,
-  validateFoundedAt,
+  validateYear,
   validateCompanyName,
 } from "../functions/validate";
 import { isValidNumber, isValidString } from "../functions/confirm";
@@ -61,25 +61,41 @@ export const changeHobbies = async (req: Request, res: Response) => {
 /**Creating a new company*/
 export const createCompany = async (req: Request, res: Response) => {
   const { userId } = res.locals;
-  const { name, foundedAt } = req.body;
+  const { name } = req.body;
   validateId(userId);
-  validateFoundedAt(foundedAt);
   validateCompanyName(name);
-  console.log(userId, name, foundedAt);
-  await pool.execute("INSERT INTO companies (name, foundedAt, founderId) VALUES (?, ?, ?)", [name, foundedAt, userId]);
-  res.status(201).json({ message: "Company created successfully", name: name, foundedAt: foundedAt });
+  await pool.execute("INSERT INTO companies (name ,founder1) VALUES (?, ?)", [name, userId]);
+  res.status(201).json({ message: "Company created successfully", name: name });
 };
 
 /**Changing the company's name*/
 export const changeCompanyName = async (req: Request, res: Response) => {
   const { userId } = res.locals;
-  const { pre, name } = req.body;
+  const { last, name } = req.body;
   validateId(userId);
-  validateCompanyName(pre);
+  validateCompanyName(last);
   validateCompanyName(name);
-  const [company] = await pool.execute("SELECT id FROM companies WHERE name = ? AND founderId = ?", [pre, userId]);
+  const [company] = await pool.execute(
+    `SELECT id FROM companies WHERE name = '${last}' AND (founder1 = ${userId} OR founder2 = ${userId});`
+  );
   if (!company || !Array.isArray(company) || company.length === 0) throw new CError("Company not found", 404);
   const [companyObj] = company as { id: number }[];
   await pool.execute("UPDATE companies SET name = ? WHERE id = ?", [name, companyObj.id]);
   res.status(200).json({ message: "Company name changed successfully", name: name });
+};
+
+/**Changing the company's year*/
+export const changeCompanyYear = async (req: Request, res: Response) => {
+  const { userId } = res.locals;
+  const { name, year } = req.body;
+  validateId(userId);
+  validateYear(year);
+  validateCompanyName(name);
+  const [company] = await pool.execute(
+    `SELECT id FROM companies WHERE name = '${name}' AND (founder1 = ${userId} OR founder2 = ${userId});`
+  );
+  if (!company || !Array.isArray(company) || company.length === 0) throw new CError("Company not found", 404);
+  const [companyObj] = company as { id: number }[];
+  await pool.execute("UPDATE companies SET year = ? WHERE id = ?", [year, companyObj.id]);
+  res.status(200).json({ message: "Company year changed successfully", year: year });
 };

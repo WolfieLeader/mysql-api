@@ -7,7 +7,7 @@ export interface IUser {
 }
 
 export interface IUserSQL {
-  id: number;
+  readonly id: number;
   name: string;
   netWorth: number;
   hobbies: string[] | null;

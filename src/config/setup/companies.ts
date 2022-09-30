@@ -1,48 +1,54 @@
+import CError from "../../error/CError";
 import { getUserIdByName } from "../../functions/query";
 import { ICompany } from "../../interfaces/companies";
 
 export const defaultCompanies: ICompany[] = [
   {
     name: "Meta",
-    founder: "Mark Zuckerberg",
-    foundedAt: 2004,
+    founders: ["Mark Zuckerberg", "Eduardo Saverin"],
+    year: 2004,
   },
   {
     name: "Microsoft",
-    founder: "Bill Gates",
-    foundedAt: 1975,
+    founders: "Bill Gates",
+    year: 1975,
   },
   {
     name: "SpaceX",
-    founder: "Elon Musk",
-    foundedAt: 2002,
+    founders: "Elon Musk",
+    year: 2002,
   },
   {
     name: "Tesla",
-    founder: "Elon Musk",
-    foundedAt: 2003,
+    founders: "Elon Musk",
+    year: 2003,
   },
   {
     name: "Amazon",
-    founder: "Jeff Bezos",
-    foundedAt: 1994,
-  },
-  {
-    name: "Bill & Melinda Gates Foundation",
-    founder: "Bill Gates",
-    foundedAt: 2000,
+    founders: "Jeff Bezos",
+    year: 1994,
   },
   {
     name: "Google",
-    founder: "Larry Page",
-    foundedAt: 1998,
+    founders: ["Larry Page", "Sergey Brin"],
+    year: 1998,
+  },
+  {
+    name: "Apple",
+    founders: ["Steve Jobs", "Steve Wozniak"],
+    year: 1976,
   },
 ];
 
 export const unformattedCompanies = (async (): Promise<string[]> => {
   return await Promise.all(
-    defaultCompanies.map(
-      async (company) => `('${company.name}', ${await getUserIdByName(company.founder)}, ${company.foundedAt})`
-    )
+    defaultCompanies.map(async (company) => {
+      const isFounders = Array.isArray(company.founders) && company.founders.length > 0;
+      const founder1Id = await getUserIdByName(isFounders ? company.founders[0] : company.founders);
+      const founder2Id = isFounders ? await getUserIdByName(company.founders[1]) : null;
+      if (founder1Id === -1 || (isFounders && founder2Id === -1)) throw new CError("Founder not found", 404);
+      const string = `('${company.name}', ${founder1Id},${founder2Id}, ${company.year})`;
+      return string;
+    })
   );
 })();

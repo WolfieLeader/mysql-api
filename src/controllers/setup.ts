@@ -37,16 +37,18 @@ export const resetTables = async (req: Request, res: Response) => {
   const companiesQueries = [
     //Create companies table
     `CREATE TABLE companies(
-    id INT AUTO_INCREMENT,
-    name VARCHAR(255) UNIQUE NOT NULL,
-    founderId INT NOT NULL,
-    foundedAt INT NOT NULL,
-    PRIMARY KEY(id),
-    FOREIGN KEY (founderId) REFERENCES users(id)
-  );
+      id INT AUTO_INCREMENT,
+      name VARCHAR(255) UNIQUE NOT NULL,
+      founder1 INT NOT NULL,
+      founder2 INT,
+      year INT,
+      PRIMARY KEY(id),
+      FOREIGN KEY (founder1) REFERENCES users(id),
+      FOREIGN KEY (founder2) REFERENCES users(id)
+    );
   `,
     //Insert companies
-    `INSERT INTO companies(name,founderId,foundedAt) VALUES ${await unformattedCompanies};`,
+    `INSERT INTO companies(name,founder1,founder2,year) VALUES ${await unformattedCompanies};`,
   ];
 
   for (const query of dropQueries) {
@@ -59,7 +61,10 @@ export const resetTables = async (req: Request, res: Response) => {
     await pool.execute(query);
   }
   const [results] = await pool.execute(
-    "SELECT companies.name AS Company,users.name AS FoundedBy FROM users RIGHT JOIN companies ON users.id=companies.founderId"
+    `SELECT companies.name AS Company,users.name AS Founder 
+      FROM companies LEFT JOIN users 
+      ON (companies.founder1=users.id OR companies.founder2=users.id)
+      ORDER BY Company ASC;`
   );
   res.status(200).json(results);
 };

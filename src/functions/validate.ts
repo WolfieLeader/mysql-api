@@ -101,11 +101,11 @@ export const validateAuthorization = (authorization: unknown): boolean => {
 };
 
 /**Validating that the year the company was founded is valid*/
-export const validateFoundedAt = (foundedAt: unknown): boolean => {
-  isValidNumber(foundedAt, "Founded At");
-  const foundedAtNum = foundedAt as number;
+export const validateYear = (year: unknown): boolean => {
+  isValidNumber(year, "Year");
+  const yearNum = year as number;
   const currentYear = new Date().getUTCFullYear();
-  if (foundedAtNum < 0 || foundedAtNum > currentYear) throw new CError("Invalid Founded At", 400);
+  if (yearNum < 0 || yearNum > currentYear) throw new CError("Invalid Founded At", 400);
   return true;
 };
 
