@@ -7,6 +7,7 @@ import {
   validateHobbies,
   validateToken,
   validateDecoded,
+  validateCompanyName,
 } from "../validate";
 import jsonwebtoken from "jsonwebtoken";
 import { secretKey } from "../../config/secretKey";
@@ -34,11 +35,11 @@ const testName = () => {
   it("Should return true if the name is valid", () => {
     expect(validateName("Wolfie")).toBe(true);
   });
-  it("Should throw errors if the email is invalid", () => {
+  it("Should throw errors if the name is invalid", () => {
     expect(() => validateName(empty)).toThrow("Missing Name");
     expect(() => validateName(aNumber)).toThrow("Invalid Name Type");
-    expect(() => validateName(strLength(3))).toThrow("Name must be between 4 and 20 characters");
-    expect(() => validateName(strLength(21))).toThrow("Name must be between 4 and 20 characters");
+    expect(() => validateName(strLength(3))).toThrow("Name must be between 4 and 24 characters");
+    expect(() => validateName(strLength(25))).toThrow("Name must be between 4 and 24 characters");
     expect(() => validateName("Test@")).toThrow("Invalid Name");
   });
 };
@@ -50,8 +51,8 @@ const testPassword = () => {
   it("Should throw errors if password is invalid", () => {
     expect(() => validatePassword(empty)).toThrow("Missing Password");
     expect(() => validatePassword(aNumber)).toThrow("Invalid Password Type");
-    expect(() => validatePassword(strLength(7))).toThrow("Password must be between 8 and 20 characters");
-    expect(() => validatePassword(strLength(21))).toThrow("Password must be between 8 and 20 characters");
+    expect(() => validatePassword(strLength(7))).toThrow("Password must be between 8 and 24 characters");
+    expect(() => validatePassword(strLength(25))).toThrow("Password must be between 8 and 24 characters");
     expect(() => validatePassword("שלוםShalom")).toThrow("Invalid Password");
   });
 };
@@ -80,10 +81,10 @@ const testHobbies = () => {
     expect(() => validateHobbies([""])).toThrow("Missing Hobby");
     expect(() => validateHobbies(["Hob1", aNumber, "Hob3"])).toThrow("Invalid Hobby Type");
     expect(() => validateHobbies(["Hobby1", strLength(1), "Hobby2"])).toThrow(
-      "Hobby must be between 2 and 30 characters"
+      "Hobby must be between 2 and 50 characters"
     );
-    expect(() => validateHobbies(["Hobby1", strLength(31), "Hobby2"])).toThrow(
-      "Hobby must be between 2 and 30 characters"
+    expect(() => validateHobbies(["Hobby1", strLength(51), "Hobby2"])).toThrow(
+      "Hobby must be between 2 and 50 characters"
     );
     expect(() => validateHobbies(["Hobby1", "@#Test!$", "Hobby2"])).toThrow("Invalid Hobby");
   });
@@ -125,6 +126,19 @@ const testDecoded = () => {
   });
 };
 
+const testCompanyName = () => {
+  it("Should return true if the company is valid", () => {
+    expect(validateName("Wolfie Company")).toBe(true);
+  });
+  it("Should throw errors if the company is invalid", () => {
+    expect(() => validateCompanyName(empty)).toThrow("Missing Company Name");
+    expect(() => validateCompanyName(aNumber)).toThrow("Invalid Company Name Type");
+    expect(() => validateCompanyName(strLength(1))).toThrow("Company Name must be between 2 and 35 characters");
+    expect(() => validateCompanyName(strLength(36))).toThrow("Company Name must be between 2 and 35 characters");
+    expect(() => validateCompanyName("Wolfie's Company")).toThrow("Invalid Company Name");
+  });
+};
+
 describe("Testing validate.ts Folder", () => {
   describe("Testing validateEmail Function", testEmail);
   describe("Testing validateName Function", testName);
@@ -133,4 +147,5 @@ describe("Testing validate.ts Folder", () => {
   describe("Testing validateHobbies Function", testHobbies);
   describe("Testing validateToken Function", testToken);
   describe("Testing validateDecoded Function", testDecoded);
+  describe("Testing validateCompanyName Function", testCompanyName);
 });

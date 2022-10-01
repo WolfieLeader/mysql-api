@@ -34,7 +34,7 @@ export const validateEmail = (email: unknown): boolean => {
 export const validateName = (name: unknown): boolean => {
   isValidString(name, "Name");
   const nameStr = name as string;
-  if (nameStr.length < 4 || nameStr.length > 20) throw new CError("Name must be between 4 and 20 characters", 400);
+  if (nameStr.length < 4 || nameStr.length > 24) throw new CError("Name must be between 4 and 24 characters", 400);
   if (!hasLettersDigitsSpacesOnly(nameStr)) throw new CError("Invalid Name", 400);
   return true;
 };
@@ -43,8 +43,8 @@ export const validateName = (name: unknown): boolean => {
 export const validatePassword = (password: unknown): boolean => {
   isValidString(password, "Password");
   const passwordStr = password as string;
-  if (passwordStr.length < 8 || passwordStr.length > 20)
-    throw new CError("Password must be between 8 and 20 characters", 400);
+  if (passwordStr.length < 8 || passwordStr.length > 24)
+    throw new CError("Password must be between 8 and 24 characters", 400);
   if (!hasLettersDigitsSpacesSymbolsOnly(passwordStr)) throw new CError("Invalid Password", 400);
   return true;
 };
@@ -58,7 +58,7 @@ export const validateHobbies = (hobbies: unknown): boolean => {
   hobbies.forEach((hobby: unknown) => {
     isValidString(hobby, "Hobby");
     const hobbyStr = hobby as string;
-    if (hobbyStr.length < 2 || hobbyStr.length > 30) throw new CError("Hobby must be between 2 and 30 characters", 400);
+    if (hobbyStr.length < 2 || hobbyStr.length > 50) throw new CError("Hobby must be between 2 and 50 characters", 400);
     if (!hasLettersDigitsSpacesOnly(hobbyStr)) throw new CError("Invalid Hobby", 400);
   });
   return true;
@@ -113,8 +113,8 @@ export const validateYear = (year: unknown): boolean => {
 export const validateCompanyName = (name: unknown): boolean => {
   isValidString(name, "Company Name");
   const nameStr = name as string;
-  if (nameStr.length < 2 || nameStr.length > 30)
-    throw new CError("Company Name must be between 2 and 30 characters", 400);
+  if (nameStr.length < 2 || nameStr.length > 35)
+    throw new CError("Company Name must be between 2 and 35 characters", 400);
   if (!hasLettersDigitsSpacesOnly(nameStr)) throw new CError("Invalid Company Name", 400);
   return true;
 };
