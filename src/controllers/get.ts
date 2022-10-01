@@ -2,8 +2,8 @@ import { Request, Response } from "express";
 import pool from "../config/sql/pool";
 import { addQueries } from "../config/sql/availableQueries";
 import CError from "../error/CError";
-import { IUser } from "../interfaces/users";
-import { ICompany } from "../interfaces/companies";
+import { IUser } from "../interfaces";
+import { ICompany } from "../interfaces";
 import { formatParamsToNumbers } from "../functions/format";
 
 /**Getting all the companies and the users who own them */

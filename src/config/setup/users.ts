@@ -1,6 +1,13 @@
 import { saltIt } from "../../functions/encrypt";
 import { stringToBigNumber } from "../../functions/format";
-import { INewUser } from "../../interfaces/users";
+
+interface INewUser {
+  name: string;
+  networth?: string;
+  hobbies?: string[];
+  email: string;
+  password: string;
+}
 
 export const defaultUsers: INewUser[] = [
   {
@@ -10,14 +17,14 @@ export const defaultUsers: INewUser[] = [
   },
   {
     name: "Mark Zuckerberg",
-    netWorth: "57.7B",
+    networth: "57.7B",
     hobbies: ["Programming", "Collecting data", "Algorithms", "AI", "Metaverse"],
     email: "mark@meta.com",
     password: "EvilCorp",
   },
   {
     name: "Bill Gates",
-    netWorth: "107.4B",
+    networth: "107.4B",
     hobbies: ["Programming", "Reading", "Investing"],
     email: "bill@outlook.com",
     password: "ImJustRich",
@@ -31,21 +38,21 @@ export const defaultUsers: INewUser[] = [
 
   {
     name: "Elon Musk",
-    netWorth: "259.8B",
+    networth: "259.8B",
     hobbies: ["Programming", "Lunching Rockets", "Tweeting", "AI"],
     email: "elon@tesla.com",
     password: "MarsIsEarth2.0",
   },
   {
     name: "Jeff Bezos",
-    netWorth: "152.9B",
+    networth: "152.9B",
     hobbies: ["Business", "Lunching Rockets", "Engineering"],
     email: "jeff@amazon.com",
     password: "IOwnTheWorld",
   },
   {
     name: "Larry Page",
-    netWorth: "90.6B",
+    networth: "90.6B",
     hobbies: ["Programming", "Reading", "Googling", "AI"],
     email: "larry@gmail.com",
     password: "JustGoogleIt",
@@ -65,7 +72,7 @@ export const defaultUsers: INewUser[] = [
 export const formattedUsers = defaultUsers.map(
   (user) =>
     `('${user.name}',
-      ${user.netWorth ? stringToBigNumber(user.netWorth) : 0},
+      ${user.networth ? stringToBigNumber(user.networth) : 0},
       ${user.hobbies ? `'${JSON.stringify(user.hobbies)}'` : null},
       '${user.email.toLowerCase()}',
       '${saltIt(user.password)}')`

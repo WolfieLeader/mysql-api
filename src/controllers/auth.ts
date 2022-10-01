@@ -12,7 +12,7 @@ import {
 } from "../functions/validate";
 import { compareSalt, hashIt, saltIt } from "../functions/encrypt";
 import { isEmailTaken, isNameTaken } from "../functions/query";
-import { IUser } from "../interfaces/users";
+import { IUser } from "../interfaces";
 import { secretKey } from "../config/secretKey";
 
 /**Creating a new user */

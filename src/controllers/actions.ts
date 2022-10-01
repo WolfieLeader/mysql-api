@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import CError from "../error/CError";
 import pool from "../config/sql/pool";
-import { isEmailTaken, isNameTaken } from "../functions/query";
+import { isCompanyNameTaken, isEmailTaken, isNameTaken } from "../functions/query";
 import {
   validateEmail,
   validateName,
@@ -64,6 +64,7 @@ export const createCompany = async (req: Request, res: Response) => {
   const { name } = req.body;
   validateId(userId);
   validateCompanyName(name);
+  if (await isCompanyNameTaken(name)) throw new CError("Company name already taken", 409);
   await pool.execute("INSERT INTO companies (name ,founder1) VALUES (?, ?)", [name, userId]);
   res.status(201).json({ message: "Company created successfully", name: name });
 };
@@ -75,6 +76,7 @@ export const changeCompanyName = async (req: Request, res: Response) => {
   validateId(userId);
   validateCompanyName(last);
   validateCompanyName(name);
+  if (await isCompanyNameTaken(name)) throw new CError("Company name already taken", 409);
   const [company] = await pool.execute(
     `SELECT id FROM companies WHERE name = '${last}' AND (founder1 = ${userId} OR founder2 = ${userId});`
   );

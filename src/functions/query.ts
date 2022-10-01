@@ -1,4 +1,4 @@
-import { IUser } from "../interfaces/users";
+import { IUser } from "../interfaces";
 import pool from "../config/sql/pool";
 import { validateName } from "./validate";
 
@@ -16,8 +16,15 @@ export const isNameTaken = async (name: string): Promise<boolean> => {
   return false;
 };
 
+/**Checking whether the company name is taken or not */
+export const isCompanyNameTaken = async (name: string): Promise<boolean> => {
+  const [takenName] = await pool.execute("SELECT id FROM companies WHERE name = ?", [name]);
+  if (Array.isArray(takenName) && takenName.length > 0) return true;
+  return false;
+};
+
 /**Getting the user id by the user's name */
-export const getUserIdByName = async (name: unknown): Promise<number> => {
+export const getUserIdByName = async (name: string): Promise<number> => {
   validateName(name);
   const [user] = await pool.execute("SELECT id FROM users WHERE name = ?", [name as string]);
   if (Array.isArray(user) && user.length > 0) {
