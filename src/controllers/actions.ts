@@ -9,9 +9,14 @@ import {
   validateHobbies,
   validateYear,
   validateCompanyName,
+  validatePassword,
 } from "../functions/validate";
 import { isValidNumber, isValidString } from "../functions/confirm";
 import { stringToBigNumber } from "../functions/format";
+import { IUserSQL } from "../models/user";
+import { compareSalt } from "../functions/encrypt";
+import Company from "../models/companyModel";
+import { ICompanySQL } from "../models/company";
 
 /**Changing the user's name*/
 export const changeName = async (req: Request, res: Response) => {
@@ -30,10 +35,24 @@ export const changeEmail = async (req: Request, res: Response) => {
   const { email } = req.body;
   validateId(userId);
   validateEmail(email);
-  const isTaken = await isEmailTaken(email.toLowerCase());
-  if (isTaken) throw new CError("Email already taken", 409);
+  if (await isEmailTaken(email.toLowerCase())) throw new CError("Email already taken", 409);
   await pool.execute("UPDATE users SET email = ? WHERE id = ?", [email.toLowerCase(), userId]);
   res.status(200).json({ message: "Email changed successfully", email: email });
+};
+
+/**Changing the user's password */
+export const changePassword = async (req: Request, res: Response) => {
+  const { userId } = res.locals;
+  const { last, password } = req.body;
+  validateId(userId);
+  validatePassword(last);
+  validatePassword(password);
+  const [user] = await pool.execute("SELECT * FROM users WHERE id = ?", [userId]);
+  if (!Array.isArray(user) || user.length === 0) throw new CError("User not found", 404);
+  const [userObj] = user as IUserSQL[];
+  if (!compareSalt(userObj.password, last)) throw new CError("Wrong Password", 401);
+  await pool.execute("UPDATE users SET password = ? WHERE id = ?", [password, userId]);
+  res.status(200).json({ message: "Password changed successfully" });
 };
 
 /**Changing the user's networth*/
@@ -65,7 +84,8 @@ export const createCompany = async (req: Request, res: Response) => {
   validateId(userId);
   validateCompanyName(name);
   if (await isCompanyNameTaken(name)) throw new CError("Company name already taken", 409);
-  await pool.execute("INSERT INTO companies (name ,founder1) VALUES (?, ?)", [name, userId]);
+  const newCompany = new Company({ name: name, founders: [userId] });
+  await pool.execute(`INSERT INTO companies (id,name,founders,year) VALUES ${newCompany.stringIt()};`);
   res.status(201).json({ message: "Company created successfully", name: name });
 };
 
@@ -78,10 +98,10 @@ export const changeCompanyName = async (req: Request, res: Response) => {
   validateCompanyName(name);
   if (await isCompanyNameTaken(name)) throw new CError("Company name already taken", 409);
   const [company] = await pool.execute(
-    `SELECT id FROM companies WHERE name = '${last}' AND (founder1 = ${userId} OR founder2 = ${userId});`
+    `SELECT * FROM companies WHERE name = '${last}' AND founders LIKE '%${userId}%';`
   );
   if (!company || !Array.isArray(company) || company.length === 0) throw new CError("Company not found", 404);
-  const [companyObj] = company as { id: number }[];
+  const [companyObj] = company as ICompanySQL[];
   await pool.execute("UPDATE companies SET name = ? WHERE id = ?", [name, companyObj.id]);
   res.status(200).json({ message: "Company name changed successfully", name: name });
 };
@@ -94,10 +114,10 @@ export const changeCompanyYear = async (req: Request, res: Response) => {
   validateYear(year);
   validateCompanyName(name);
   const [company] = await pool.execute(
-    `SELECT id FROM companies WHERE name = '${name}' AND (founder1 = ${userId} OR founder2 = ${userId});`
+    `SELECT * FROM companies WHERE name = '${name}' AND founders LIKE '%${userId}%';`
   );
   if (!company || !Array.isArray(company) || company.length === 0) throw new CError("Company not found", 404);
-  const [companyObj] = company as { id: number }[];
+  const [companyObj] = company as ICompanySQL[];
   await pool.execute("UPDATE companies SET year = ? WHERE id = ?", [year, companyObj.id]);
   res.status(200).json({ message: "Company year changed successfully", year: year });
 };

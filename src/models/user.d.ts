@@ -1,17 +1,23 @@
-export interface IUser {
+export interface IUserRequired {
   name: string;
   email: string;
   password: string;
-  networth: number;
-  hobbies: string[] | null;
+  networth?: number;
+  hobbies?: string[];
 }
 
-export interface IUserRow extends IUser {
+export interface IUser extends IUserRequired {
+  networth: number;
+  hobbies: string[];
+}
+export interface IUserSchema extends IUser {
   readonly id: string;
+}
+
+export interface IUserSQL extends IUserSchema {
   readonly createdAt: Date;
 }
 
-export interface IUserObj extends IUserRow {
-  readonly createdAt: Date | null;
+export interface IUserModel extends IUserSchema {
   stringIt: () => string;
 }

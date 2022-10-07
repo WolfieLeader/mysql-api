@@ -1,13 +1,18 @@
-export interface ICompany {
+export interface ICompanyRequired {
   name: string;
   founders: string[];
-  year: number | null;
+  year?: number;
 }
 
-export interface ICompanyRow extends ICompany {
+export interface ICompany extends ICompanyRequired {
+  year: number | null;
+}
+export interface ICompanySchema extends ICompany {
   readonly id: string;
 }
 
-export interface ICompanyObj extends ICompanyRow {
+export interface ICompanySQL extends ICompanySchema {}
+
+export interface ICompanyModel extends ICompanySchema {
   stringIt: () => string;
 }

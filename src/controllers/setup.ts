@@ -3,10 +3,11 @@ import { defaultUsers } from "../config/default/users";
 import pool from "../config/sql/pool";
 import { connectionSettings } from "../config/sql/connection";
 import { createCompaniesTable, createUsersTable } from "../config/sql/tables";
-import User from "../models/User";
+import User from "../models/userModel";
 import { stringToBigNumber } from "../functions/format";
-import Company from "../models/Company";
+import Company from "../models/companyModel";
 import { defaultCompanies } from "../config/default/companies";
+import { IUserSQL } from "../models/user";
 
 /**Showing the database connection settings */
 export const getSettings = (req: Request, res: Response) => {
@@ -26,7 +27,7 @@ export const resetTables = async (req: Request, res: Response) => {
         email: user.email,
         password: user.password,
         networth: user.networth ? stringToBigNumber(user.networth) : 0,
-        hobbies: user.hobbies ? user.hobbies : null,
+        hobbies: user.hobbies ? user.hobbies : [],
       }).stringIt();
     })
     .join(", ");
@@ -37,10 +38,10 @@ export const resetTables = async (req: Request, res: Response) => {
     await Promise.all(
       defaultCompanies.map(async (company) => {
         const [founders] = await pool.execute(
-          `SELECT id FROM users WHERE name IN (${company.foundersNames.map((name) => `'${name}'`).join(", ")});`
+          `SELECT * FROM users WHERE name IN (${company.foundersNames.map((name) => `'${name}'`).join(", ")});`
         );
         if (!Array.isArray(founders)) throw new Error("Invalid Founders");
-        const foundersObj = founders as { id: string }[];
+        const foundersObj = founders as IUserSQL[];
         const foundersIds = foundersObj.map((founder) => founder.id);
         return new Company({
           name: company.name,

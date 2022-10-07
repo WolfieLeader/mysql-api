@@ -12,8 +12,7 @@ export const getAll = async (req: Request, res: Response) => {
     ON JSON_CONTAINS(companies.founders, CAST(CONCAT('["',users.id,'"]') AS JSON), '$') 
     ORDER BY companies.name ASC;`
   );
-  if (!results) throw new CError("No results found", 404);
-  if (!Array.isArray(results)) throw new CError("Results is not an array");
+  if (!results || !Array.isArray(results) || results.length < 1) throw new CError("No results found", 404);
   return res.status(200).json({ results });
 };
 

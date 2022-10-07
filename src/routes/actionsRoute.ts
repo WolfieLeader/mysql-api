@@ -9,6 +9,7 @@ import {
   changeCompanyName,
   changeNetworth,
   changeCompanyYear,
+  changePassword,
 } from "../controllers/actions";
 
 const actionsRoute = express.Router();
@@ -17,6 +18,7 @@ const actionsRoute = express.Router();
 actionsRoute.use(protect(authToken));
 actionsRoute.put("/name", protect(changeName));
 actionsRoute.put("/email", protect(changeEmail));
+actionsRoute.put("/password", protect(changePassword));
 actionsRoute.put("/networth", protect(changeNetworth));
 actionsRoute.put("/hobbies", protect(changeHobbies));
 actionsRoute.post("/company", protect(createCompany));
