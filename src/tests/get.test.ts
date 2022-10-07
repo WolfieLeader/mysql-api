@@ -10,6 +10,7 @@ describe("Testing Users", () => {
   let server: any;
   beforeAll(async () => {
     server = await app.listen(3000);
+    await request(app).post("/reset");
   });
   /**Closes the server and the pool after all the tests */
   afterAll(async () => {

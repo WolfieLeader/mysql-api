@@ -1,7 +1,7 @@
 import CError from "../error/CError";
 import { validateCompanyName, validateYear } from "../functions/validate";
 import { v4 as uuidv4 } from "uuid";
-import { ICompanyRequired, ICompanyModel } from "./company.d";
+import { ICompanyRequired, ICompanyModel } from "./company";
 
 class Company implements ICompanyModel {
   readonly id: string;

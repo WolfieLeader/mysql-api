@@ -1,4 +1,4 @@
-import { IUserModel, IUserRequired } from "./user.d";
+import { IUserModel, IUserRequired } from "./user";
 import { v4 as uuidv4 } from "uuid";
 import { validateEmail, validateHobbies, validateName, validatePassword } from "../functions/validate";
 import { isValidNumber } from "../functions/confirm";
