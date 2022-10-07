@@ -10,10 +10,11 @@ import {
   validatePassword,
   validateToken,
 } from "../functions/validate";
-import { compareSalt, hashIt, saltIt } from "../functions/encrypt";
+import { compareSalt, hashIt } from "../functions/encrypt";
 import { isEmailTaken, isNameTaken } from "../functions/query";
-import { IUser } from "../interfaces";
+import { IUser, IUserRow } from "../models/user.d";
 import { secretKey } from "../config/secretKey";
+import User from "../models/User";
 
 /**Creating a new user */
 export const createUser = async (req: Request, res: Response) => {
@@ -23,7 +24,8 @@ export const createUser = async (req: Request, res: Response) => {
   validatePassword(password);
   if (await isEmailTaken(email)) throw new CError("Email already taken", 409);
   if (await isNameTaken(name)) throw new CError("Name already taken", 409);
-  await pool.execute("INSERT INTO users(name,email,password) VALUES(?,?,?)", [name, email, saltIt(password)]);
+  const newUser = new User({ name, email, password, networth: 0, hobbies: [] });
+  await pool.execute(`INSERT INTO users(id,name,email,password,networth,hobbies) VALUES ${newUser.stringIt()}`);
   res.status(201).json({ message: "User created" });
 };
 
@@ -33,14 +35,13 @@ export const loginUser = async (req: Request, res: Response) => {
   validateEmail(email);
   validatePassword(password);
   const [user] = await pool.execute("SELECT * FROM users WHERE email = ?", [email.toLowerCase()]);
-  if (Array.isArray(user) && user.length > 0) {
-    const [userObj] = user as IUser[];
-    const comparedPasswords = compareSalt(userObj.password, password);
-    if (!comparedPasswords) throw new CError("Invalid password", 401);
-    const jwtKey = hashIt(secretKey);
-    const token = jsonwebtoken.sign({ userId: userObj.id }, jwtKey, { expiresIn: "5m" });
-    res.status(200).json({ token: token });
-  }
+  if (!Array.isArray(user) || user.length === 0) throw new CError("User not found", 404);
+  const [userObj] = user as IUserRow[];
+  const comparedPasswords = compareSalt(userObj.password, password);
+  if (!comparedPasswords) throw new CError("Invalid password", 401);
+  const jwtKey = hashIt(secretKey);
+  const token = jsonwebtoken.sign({ userId: userObj.id }, jwtKey, { expiresIn: "5m" });
+  res.status(200).json({ token: token });
 };
 
 /**Authorizing the user */

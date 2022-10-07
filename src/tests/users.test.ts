@@ -1,7 +1,7 @@
 import { expect, it, describe, afterAll, beforeAll } from "@jest/globals";
 import request from "supertest";
 import app from "../config/app";
-import { defaultUsers } from "../config/setup/users";
+import { defaultUsers } from "../config/default/users";
 import pool from "../config/sql/pool";
 import { bigNumberToString } from "../functions/format";
 

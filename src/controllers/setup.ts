@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
-import { formattedUsers } from "../config/setup/users";
-import { unformattedCompanies } from "../config/setup/companies";
+import { defaultUsers } from "../config/default/users";
 import pool from "../config/sql/pool";
 import { connectionSettings } from "../config/sql/connection";
+import { createCompaniesTable, createUsersTable } from "../config/sql/tables";
+import User from "../models/User";
+import { stringToBigNumber } from "../functions/format";
+import Company from "../models/Company";
+import { defaultCompanies } from "../config/default/companies";
 
 /**Showing the database connection settings */
 export const getSettings = (req: Request, res: Response) => {
@@ -11,60 +15,47 @@ export const getSettings = (req: Request, res: Response) => {
 
 /**This function will reset the tables in the database */
 export const resetTables = async (req: Request, res: Response) => {
-  const dropQueries = [
-    //Remove all companies
-    "DROP TABLE IF EXISTS companies;",
-    //Remove all users
-    "DROP TABLE IF EXISTS users;",
-  ];
-  const usersQueries = [
-    //Create users table
-    `CREATE TABLE users(
-    id INT AUTO_INCREMENT,
-    name VARCHAR(255) UNIQUE NOT NULL,
-    netWorth BIGINT DEFAULT 0,
-    hobbies JSON,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(id)
-  );
-  `,
-    //Insert users
-    `INSERT INTO users(name,netWorth,hobbies,email,password) VALUES ${formattedUsers};`,
-  ];
+  await pool.execute("DROP TABLE IF EXISTS companies;");
+  await pool.execute("DROP TABLE IF EXISTS users;");
 
-  const companiesQueries = [
-    //Create companies table
-    `CREATE TABLE companies(
-      id INT AUTO_INCREMENT,
-      name VARCHAR(255) UNIQUE NOT NULL,
-      founder1 INT NOT NULL,
-      founder2 INT,
-      year INT,
-      PRIMARY KEY(id),
-      FOREIGN KEY (founder1) REFERENCES users(id),
-      FOREIGN KEY (founder2) REFERENCES users(id)
-    );
-  `,
-    //Insert companies
-    `INSERT INTO companies(name,founder1,founder2,year) VALUES ${await unformattedCompanies};`,
-  ];
+  await pool.execute(createUsersTable);
+  const users = defaultUsers
+    .map((user) => {
+      return new User({
+        name: user.name,
+        email: user.email,
+        password: user.password,
+        networth: user.networth ? stringToBigNumber(user.networth) : 0,
+        hobbies: user.hobbies ? user.hobbies : null,
+      }).stringIt();
+    })
+    .join(", ");
+  await pool.execute(`INSERT INTO users(id,name,email,password,networth,hobbies) VALUES ${users};`);
 
-  for (const query of dropQueries) {
-    await pool.execute(query);
-  }
-  for (const query of usersQueries) {
-    await pool.execute(query);
-  }
-  for (const query of companiesQueries) {
-    await pool.execute(query);
-  }
+  await pool.execute(createCompaniesTable);
+  const companies = (
+    await Promise.all(
+      defaultCompanies.map(async (company) => {
+        const [founders] = await pool.execute(
+          `SELECT id FROM users WHERE name IN (${company.foundersNames.map((name) => `'${name}'`).join(", ")});`
+        );
+        if (!Array.isArray(founders)) throw new Error("Invalid Founders");
+        const foundersObj = founders as { id: string }[];
+        const foundersIds = foundersObj.map((founder) => founder.id);
+        return new Company({
+          name: company.name,
+          founders: foundersIds,
+          year: company.year,
+        }).stringIt();
+      })
+    )
+  ).join(", ");
+  await pool.execute(`INSERT INTO companies(id,name,founders,year) VALUES ${companies};`);
+
   const [results] = await pool.execute(
-    `SELECT companies.name AS Company,users.name AS Founder 
-      FROM companies LEFT JOIN users 
-      ON (companies.founder1=users.id OR companies.founder2=users.id)
-      ORDER BY Company ASC;`
+    `SELECT companies.name AS Company, users.name AS Founder FROM companies LEFT JOIN users
+    ON JSON_CONTAINS(companies.founders, CAST(CONCAT('["',users.id,'"]') AS JSON), '$') 
+    ORDER BY companies.name ASC;`
   );
   res.status(200).json(results);
 };

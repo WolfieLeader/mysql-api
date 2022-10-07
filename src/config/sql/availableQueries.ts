@@ -1,39 +1,14 @@
 import { Request } from "express";
 
-type Order = "ASC" | "DESC";
+export type Order = "desc" | "asc";
 
-const getOrder = (order: unknown): Order => {
-  if (order && typeof order === "string") {
-    const orderUpper = order.toUpperCase();
-    if (orderUpper === "ASC" || orderUpper === "DESC") {
-      return orderUpper;
-    }
-  }
-  return "ASC";
-};
-
-const getLimit = (limit: unknown): number => {
-  if (limit && typeof limit === "string") {
-    const limitNumber = Number(limit);
-    if (!Number.isNaN(limitNumber) && limitNumber > 0 && limitNumber <= 100) {
-      return limitNumber;
-    }
-  }
-  return 10;
-};
-
-const getOffset = (offset: unknown): number => {
-  if (offset && typeof offset === "string") {
-    const offsetNumber = Number(offset);
-    if (!Number.isNaN(offsetNumber) && offsetNumber > 0) {
-      return offsetNumber;
-    }
-  }
-  return 0;
-};
-
-export const addQueries = (req: Request, by: string): string => {
+export const addQueries = (req: Request): { order: string; limit: number; offset: number } => {
   const { order, limit, offset } = req.query;
-  const string = ` ORDER BY ${by} ${getOrder(order)} LIMIT ${getOffset(offset)},${getLimit(limit)};`;
-  return string;
+
+  const orderQuery: Order = order && typeof order === "string" && order.toLowerCase() === "desc" ? "desc" : "asc";
+  const isStringedNumber = (value: any) =>
+    value && typeof value === "string" && !isNaN(Number(value)) && Number(value) > 0;
+  const limitQuery = isStringedNumber(limit) ? Number(limit) : 10;
+  const offsetQuery = isStringedNumber(offset) ? Number(offset) : 0;
+  return { order: orderQuery, limit: limitQuery, offset: offsetQuery };
 };

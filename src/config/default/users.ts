@@ -1,6 +1,3 @@
-import { saltIt } from "../../functions/encrypt";
-import { stringToBigNumber } from "../../functions/format";
-
 interface INewUser {
   name: string;
   networth?: string;
@@ -68,12 +65,3 @@ export const defaultUsers: INewUser[] = [
     password: "ItsNotFunBeing2nd",
   },
 ];
-
-export const formattedUsers = defaultUsers.map(
-  (user) =>
-    `('${user.name}',
-      ${user.networth ? stringToBigNumber(user.networth) : 0},
-      ${user.hobbies ? `'${JSON.stringify(user.hobbies)}'` : null},
-      '${user.email.toLowerCase()}',
-      '${saltIt(user.password)}')`
-);
